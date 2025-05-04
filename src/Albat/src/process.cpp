@@ -396,14 +396,14 @@ void Albat::processTypeDeclaration(const std::string &typeStr, std::string &stat
             int ret = setup_Line(tmp, declarationType, returnFlg);
             if (ret) {
                 nextindices.push_back(-1);
-                lines.push_back(definition);
+                lines.push_back(tmp);
                 lineTypes.push_back(LINETYPES::INPUT);
             }
         }
         else {
             setup_def(tmp);
             nextindices.push_back(-1);
-            lines.push_back(definition);
+            lines.push_back(tmp);
             lineTypes.push_back(LINETYPES::SENTENCE);
         }
     }
