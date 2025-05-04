@@ -356,7 +356,6 @@ void Albat::processSentence(std::string &code, int typeEndpos, int &returnFlag)
                     while (code[endPos] != ';') endPos++;
                     statement = code.substr(startPos, endPos + 1 - startPos);
                 }
-                
                 statement[statement.size() - 1] = ';';
                 if (typeEndpos >= 0) {
                     processTypeDeclaration(code.substr(0, typeEndpos), statement, returnFlag);

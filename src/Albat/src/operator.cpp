@@ -1,5 +1,6 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
+#include <iostream>
 
 std::string Albat::update_operator(std::string &code, const std::string &operator_symbol) {
     struct OperatorInfo {
@@ -12,12 +13,15 @@ std::string Albat::update_operator(std::string &code, const std::string &operato
         {"/+", {" (_div(", "_div"}},
         {"%+", {" (_mod(", "_mod"}}
     };
-  
+    
+    LibraryManager &libMan = LibraryManager::getInstance();
+
     if (operatorMap.find(operator_symbol) == operatorMap.end()) {
         return code;
     }
   
     const std::string &prefix = operatorMap.at(operator_symbol).prefix;
+    const std::string &funcName = operatorMap.at(operator_symbol).funcName;
     const std::string suffix = ")) "; 
     
     int searchPos = 0;
@@ -76,6 +80,7 @@ std::string Albat::update_operator(std::string &code, const std::string &operato
         StringUtils::trim(leftExpr);
         StringUtils::trim(rightExpr);
         code = before + prefix + leftExpr + ", " + rightExpr + suffix + after;
+        libMan.requestLibrary(funcName, 0);
         searchPos = 0;
     }
     
@@ -93,6 +98,8 @@ std::string Albat::update_operator_equal(std::string &code, const std::string &o
         {"/+=", {"_div", "_div"}},
         {"%+=", {"_mod", "_mod"}}
     };
+
+    LibraryManager &libMan = LibraryManager::getInstance();
 
     if (operatorMap.find(operatorSymbol) == operatorMap.end()) {
         return code;
@@ -125,6 +132,7 @@ std::string Albat::update_operator_equal(std::string &code, const std::string &o
     StringUtils::trim(rightExpr);
     
     std::string result = before + leftVar + " = " + funcName + "(" + leftVar + ", " + rightExpr + ")" + afterOperator;
-    
+    std::cerr << "funcName : " << funcName << std::endl;
+    libMan.requestLibrary(funcName, 0);
     return result;
 }

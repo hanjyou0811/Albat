@@ -409,7 +409,7 @@ void LibraryManager::initUtilityFunctions(){
     }
     {
         std::string func_name = "yesno";
-        std::string func_code = "std::string yesno(int ok, std::string yes = \"Yes\", std::string no = \"No\") {\n  return ok ? yes : no;\n}\n";
+        std::string func_code = "string yesno(int ok, string yes = \"Yes\", string no = \"No\") {\n  return ok ? yes : no;\n}\n";
         std::string pos = HEAD;
     
         lib_names.push_back(func_name);

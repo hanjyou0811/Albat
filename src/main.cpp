@@ -19,7 +19,6 @@ int main()
     albat.parse(code, "", 0, LINETYPES::PROGRAM);
     std::string lib;
     lib = LibraryManager::getInstance().extractInsertLibraries("head");
-    // std::cerr << lib << std::endl;
     albat.insert(lib, 0);
     lib = LibraryManager::getInstance().extractInsertLibraries("header_of_main");
     for(int i=0;i<albat.lines.size();i++)

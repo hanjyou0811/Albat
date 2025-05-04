@@ -5,7 +5,6 @@
 void Albat::parse(std::string &code, std::string opt, int nestlevel, LINETYPES codeType)
 {
     init();
-
     int endType = processCodeStart(code, codeType, opt);
     int extraSentence = !opt.empty() && endType == 0;
     int returnFlg = 0;
