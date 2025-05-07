@@ -1,6 +1,5 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
-#include <iostream>
 
 std::string Albat::update_operator(std::string &code, const std::string &operator_symbol) {
     struct OperatorInfo {
@@ -132,7 +131,6 @@ std::string Albat::update_operator_equal(std::string &code, const std::string &o
     StringUtils::trim(rightExpr);
     
     std::string result = before + leftVar + " = " + funcName + "(" + leftVar + ", " + rightExpr + ")" + afterOperator;
-    std::cerr << "funcName : " << funcName << std::endl;
     libMan.requestLibrary(funcName, 0);
     return result;
 }

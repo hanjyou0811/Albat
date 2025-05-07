@@ -1,7 +1,6 @@
 #include "../library.h"
 #include "../libraryflg.h"
 #include "../../Utils/stringutils.h"
-#include <iostream>
 
 std::string LibraryManager::extractInsertLibraries(const std::string &str) {
     bool flag;

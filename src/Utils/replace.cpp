@@ -1,4 +1,5 @@
 # include "stringutils.h"
+#include <iostream>
 
 /*replace.cpp*/
 namespace StringUtils {

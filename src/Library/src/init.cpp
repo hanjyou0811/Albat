@@ -1,6 +1,5 @@
 #include "../library.h"
 #include "../libraryflg.h"
-#include <iostream>
 
 void LibraryManager::initBasicSettings()
 {

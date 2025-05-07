@@ -1,7 +1,6 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
 #include "../../Library/library.h"
-#include <iostream>
 
 void Albat::library_check(std::string &str)
 {

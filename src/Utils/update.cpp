@@ -256,5 +256,5 @@ namespace StringUtils{
         // if(strpos_exlit_token(code, "Cipher") >= 0) libMan.insertStill.insert("cipher");
         
         // if(strpos_exlit_token(code, "biseek") >= 0) libMan.insertStill.insert("biseek");
-    }   
+    }
 }

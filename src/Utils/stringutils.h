@@ -5,6 +5,12 @@
 # include <utility>
 # include <vector>
 # include <algorithm>
+# include <regex>
+
+struct Match {
+    std::string typeName;
+    std::string varName;
+};
 
 namespace StringUtils {
     int isOperator(char c);
@@ -47,6 +53,8 @@ namespace StringUtils {
     std::string extra_varname(std::string &str);
     std::string extra_varname_ns(std::string &str);
     std::string extra_input_option(std::string &str);
+    std::pair<std::string, std::string> extra_VarInfo(const std::string &str);
+    std::vector<Match> extractTypeAtVar(const std::string& cond);
 
     void update_Function_main(std::string &s, int pos = -1);
     void update_library_replace(std::string &code);

@@ -1,6 +1,5 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
-#include <iostream>
 
 struct PreprocessorInfo{
     std::string name;

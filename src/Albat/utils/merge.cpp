@@ -14,17 +14,20 @@ void Albat::mergeMap(std::map<std::string, std::string> &tgt,
 }
 
 void Albat::merges(const std::set<std::string> &sVarTypes,
-    const std::set<std::string> &sTempVarTypes)
-{
+    const std::set<std::string> &sTempVarTypes, const std::map<std::string, std::string> &sGlobalVars,
+    const std::map<std::string, std::string> &sLocalVars,
+    const std::map<std::string, std::string> &sArgVars)
+    {
         mergeSet(typenames, sVarTypes);
         mergeSet(tmptypenames, sTempVarTypes);
-        mergeMap(globalVars, globalVars);
-        mergeMap(localVars, localVars);
-        mergeMap(argVars, argVars);
+        mergeMap(globalVars, sGlobalVars);
+        mergeMap(globalVars, sLocalVars);
+        mergeMap(globalVars, sArgVars);
     }
 
 void Albat::mergeParent(Albat *parentNode)
 {
     parent = parentNode;
-    merges(parentNode->typenames, parentNode->tmptypenames);
+    merges(parentNode->typenames, parentNode->tmptypenames, parentNode->globalVars,
+        parentNode->localVars, parentNode->argVars);
 }

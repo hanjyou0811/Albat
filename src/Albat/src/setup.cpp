@@ -1,6 +1,5 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
-#include <iostream>
 
 int Albat::setup_Line(std::string &str, std::string tp, int &is_return)
 {
@@ -10,7 +9,6 @@ int Albat::setup_Line(std::string &str, std::string tp, int &is_return)
   std::string res = "";
   std::vector<std::string> vars;
   library_check(str);
-  std::cerr << "str1 : " << str << std::endl;
   if(type || str[i] == '$' || str[i] == '@')
   {
     while(str[i] == '@' || str[i] == '$')
@@ -133,7 +131,6 @@ void Albat::setup_def(std::string &str)
     std::string res = "";
     int i = 0, j = 0;
     library_check(str);
-    std::cerr << "str2 : " << str << std::endl;
     for(i=1;i<str.size();i++)
     {
         std::string tmp = str.substr(0,i);

@@ -1,6 +1,5 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
-#include <iostream>
 
 void Albat::insert(std::string &str, int pos){
     int pure;

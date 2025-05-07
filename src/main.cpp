@@ -30,5 +30,6 @@ int main()
         }
     }
     albat.print(0);
+    // albat.debug(0);
     return 0;
 }

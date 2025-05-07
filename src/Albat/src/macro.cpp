@@ -1,6 +1,5 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
-#include <iostream>
 
 int Albat::processMacros(std::string &code, std::string &blockName)
 {

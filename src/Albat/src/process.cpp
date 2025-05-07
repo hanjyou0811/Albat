@@ -1,6 +1,5 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
-#include <iostream>
 
 int Albat::processCodeStart(std::string &code, LINETYPES codeType, std::string &opt)
 {
@@ -217,9 +216,38 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
         
         // ブロック名とブロック内容を取得
         std::string blockName = code.substr(0, blockEndpos);
+        if(blockName.substr(0, 5) == "while" && StringUtils::strpos_exlit(blockName, "@") != -1)
+        {
+            std::string cond_expr = blockName.substr(5);
+            StringUtils::trim(cond_expr);
+            std::vector<Match> matches = StringUtils::extractTypeAtVar(cond_expr);
+            for(auto &x : matches){
+                std::string varName = x.varName;
+                std::string typeName = x.typeName;
+                std::string vars = typeName + "@" + varName + ";";
+                int limit = std::min(100, static_cast<int>(vars.size() + 1));
+                int typeEndpos = -1;
+                for (int i = 1; i < limit; i++)
+                {
+                    std::string tmp = vars.substr(0, i);
+                    if (isValidtypename(tmp, tmp[i]))
+                    {
+                        typeEndpos = i;
+                    }
+                }
+                StringUtils::replace_AtoZ_exlit_token(blockName, vars.substr(0, vars.size()-1), varName);
+                processSentence(vars, typeEndpos, returnFlag);
+            }
+        }
+        {
+            int end = StringUtils::find_pairBracket1(blockName, 0);
+
+        }
         code = code.substr(blockEndpos);
-        // ライブラリチェック
+
+        // ライブラリチェック 
         library_check(blockName);
+
         
         // main関数の自動生成
         if (blockName.empty() && codeType == LINETYPES::PROGRAM && !mainFunctionCreated) {
@@ -396,14 +424,14 @@ void Albat::processTypeDeclaration(const std::string &typeStr, std::string &stat
             int ret = setup_Line(tmp, declarationType, returnFlg);
             if (ret) {
                 nextindices.push_back(-1);
-                lines.push_back(definition);
+                lines.push_back(tmp);
                 lineTypes.push_back(LINETYPES::INPUT);
             }
         }
         else {
             setup_def(tmp);
             nextindices.push_back(-1);
-            lines.push_back(definition);
+            lines.push_back(tmp);
             lineTypes.push_back(LINETYPES::SENTENCE);
         }
     }

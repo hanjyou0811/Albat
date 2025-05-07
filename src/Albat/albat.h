@@ -7,6 +7,9 @@
 #include <map>
 #include "../Library/library.h"
 
+//debug
+#include <iostream>
+
 enum class LINETYPES{
     PROGRAM,
     SENTENCE,
@@ -49,14 +52,19 @@ class Albat {
         void mergeMap(std::map<std::string, std::string> &tgt,
                       const std::map<std::string, std::string> &src);
         void merges(const std::set<std::string> &sVarTypes,
-                    const std::set<std::string> &sTempVarTypes);
+                    const std::set<std::string> &sTempVarTypes,
+                    const std::map<std::string, std::string> &sGlobalVars,
+                    const std::map<std::string, std::string> &sLocalVars,
+                    const std::map<std::string, std::string> &sArgVars);
         void mergeParent(Albat *parent);
 
+        //var.cpp
         void addVarType(const std::string &type);
         void addTempVarType(const std::string &type);
         void addLocalVar(const std::string &name, const std::string &type);
         void addGlobalVar(const std::string &name, const std::string &type);
         void addArgVar(const std::string &name, const std::string &type);
+        std::string gen_fresh_varname(int size = 5);
 
         //valid.cpp
         int isValidEmptyBlock();
