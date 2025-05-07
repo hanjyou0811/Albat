@@ -224,7 +224,12 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
             for(auto &x : matches){
                 std::string varName = x.varName;
                 std::string typeName = x.typeName;
-                std::string vars = typeName + "@" + varName + ";";
+                std::string vars;
+                int varName_isEmpty = varName.empty();
+                if(varName_isEmpty){
+                    varName = gen_fresh_varname();
+                }
+                vars = typeName + "@" + varName + ";";
                 int limit = std::min(100, static_cast<int>(vars.size() + 1));
                 int typeEndpos = -1;
                 for (int i = 1; i < limit; i++)
@@ -235,7 +240,7 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
                         typeEndpos = i;
                     }
                 }
-                StringUtils::replace_AtoZ_exlit_token(blockName, vars.substr(0, vars.size()-1), varName);
+                StringUtils::replace_AtoZ_exlit_token(blockName, typeName + "@" + (varName_isEmpty?"":varName), varName+(varName_isEmpty?"--":""));
                 processSentence(vars, typeEndpos, returnFlag);
             }
         }
