@@ -52,6 +52,7 @@ int Albat::setup_Line(std::string &str, std::string tp, int &is_return)
           }
         }
       }
+      
       if(str[0] == '(')
       {
         StringUtils::trim_char(str, '(', ')');
