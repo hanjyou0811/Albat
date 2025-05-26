@@ -130,7 +130,7 @@ void Albat::setup_def(std::string &str)
     std::string type = "";
     std::vector<std::string> vars;
     std::string res = "";
-    int i = 0, j = 0;
+    int i = 0, j = 0, is_lambda = 0;
     library_check(str);
     for(i=1;i<str.size();i++)
     {
@@ -166,25 +166,32 @@ void Albat::setup_def(std::string &str)
     //ラムダ式 
     //[]{};
     while(str.size()){
-      int si, sj, is_lambda = 0;
+      int si, sj;
+      is_lambda = 0;
       char pre = ';';
       std::string tmpstr = "";
       for(si=0;si<str.size()-1;si++){
         //キャプチャいい感じに取りたい
-        if(str[si] == '[' && str[si+1] == ']' && (pre==';' || pre==',' || pre=='=' || pre=='(' || pre==')' || pre=='{' || pre=='}')){
+        if(str[si] == '[' && (pre==';' || pre==',' || pre=='=' || pre=='(' || pre==')' || pre=='{' || pre=='}')){
           std::string tmpstr = str.substr(si);
-          int square_siz = StringUtils::size_brackets(tmpstr);
-          for(sj=si;sj<str.size();sj++) if(str[sj] == '{') break;
+          int square_size = StringUtils::size_brackets(tmpstr);
+          std::string capture_str = str.substr(si + 1, square_size - 2);
+          for(sj = si + square_size; sj < str.size(); sj++){
+            if(str[sj] == '{') break;
+          }
           if(sj == str.size()) break;
+
           tmpstr = str.substr(sj);
-          int block_siz = StringUtils::size_block(tmpstr);
+          int block_size = StringUtils::size_block(tmpstr);
           tmpstr = str.substr(0, sj);
+
           lines.push_back(tmpstr);
-          nextindices.push_back(-1);
           lineTypes.push_back(LINETYPES::SENTENCE);
-          tmpstr = str.substr(sj, block_siz);
+          nextindices.push_back(-1);
+          tmpstr = str.substr(sj, block_size);
+          tmpstr += ";";
           insert(tmpstr, lines.size());
-          str = str.substr(sj+block_siz);
+          str = str.substr(sj + block_size);
           is_lambda = 1;
           break;
         }
@@ -193,5 +200,5 @@ void Albat::setup_def(std::string &str)
       if(is_lambda == 1) continue;
       str = ""; 
     }
-    str = strtmp;
+    if(is_lambda == 0) str = strtmp;
   }
