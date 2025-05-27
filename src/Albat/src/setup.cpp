@@ -1,11 +1,11 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
 
-int Albat::setup_Line(std::string &str, std::string tp, int &is_return)
+int Albat::setup_Line(std::string &str, std::string tp, std::string &typeStr, int &is_return)
 {
-  std::string head_tmp = "",tmp_vars = "", tmp = "";
+  std::string head_tmp = "",tmp_vars = "", tmp = "", varName = "";
   int i = 0, type = (tp == "input" ? 1 : 0);
-  int size_opt = 0;
+  int loop_opt = 0;
   std::string res = "";
   std::vector<std::string> vars;
   library_check(str);
@@ -46,9 +46,10 @@ int Albat::setup_Line(std::string &str, std::string tp, int &is_return)
         if(tmp.size()){
           StringUtils::removeAllWhitespace(tmp);
           if(tmp.substr(0,5)=="size="){
-            size_opt = 1;
+            loop_opt = 1;
             std::string size = tmp.substr(5);
-            res += ("rep(i,0," + size + "){");
+            varName = gen_fresh_varname();
+            res += ("rep(" + varName + "0," + size + "){");
           }
         }
       }
@@ -69,17 +70,26 @@ int Albat::setup_Line(std::string &str, std::string tp, int &is_return)
         }
         if(vardef[0] == '!') continue;
         //++--の方は多分使えない
+        if(typeStr.substr(0, 6) == "vector") {
+          loop_opt = 1;
+        }
         if(vardef.find("++") != std::string::npos || vardef.find("--") != std::string::npos){
           std::vector<std::string> tmp = StringUtils::split_without_chars(vardef, "+-");
-          vardef = head_tmp + "(" + tmp[0] + (vardef.find("++") != std::string::npos ? ", 1" : ", -1") + ");";
+          vardef = head_tmp + "(" + tmp[0] + ");";
+          if(loop_opt)
+          {
+            varName = gen_fresh_varname();
+            vardef += "fore(" + varName + "," + tmp[0] + "){";
+          }
+          vardef += ((loop_opt && !varName.empty())? varName : tmp[0]) + (vardef.find("++") != std::string::npos ? "++" : "--") + ";";
         }else
         {
           //こっち主に使う
-          vardef = head_tmp + "(" + vardef  + (size_opt ? "[i]" : "" )+ ");";
+          vardef = head_tmp + "(" + vardef  + (loop_opt ? "[i]" : "" )+ ");";
         }
         res += vardef;
       }
-      if(size_opt) res += "}";
+      if(loop_opt) res += "}";
       insert(res, lines.size());
       // nextIndices.push_back(nextPrograms.size());
       // lines.push_back(res);
@@ -157,6 +167,7 @@ void Albat::setup_def(std::string &str)
       std::string var = v;
       // if(var[0] == '&' || var[0] == '*') var = var.substr(1);
       StringUtils::trim(var);
+      var = StringUtils::extra_varname_for_vardef(var);
       res += var + (i == vars.size()-1 ? ";" : ", ");
       addLocalVar(var, type);
     }
@@ -171,7 +182,6 @@ void Albat::setup_def(std::string &str)
       char pre = ';';
       std::string tmpstr = "";
       for(si=0;si<str.size()-1;si++){
-        //キャプチャいい感じに取りたい
         if(str[si] == '[' && (pre==';' || pre==',' || pre=='=' || pre=='(' || pre==')' || pre=='{' || pre=='}')){
           std::string tmpstr = str.substr(si);
           int square_size = StringUtils::size_brackets(tmpstr);
