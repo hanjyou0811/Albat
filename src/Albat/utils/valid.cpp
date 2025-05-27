@@ -121,7 +121,7 @@ int Albat::isValidtypename(std::string &str, char nex)
         return (0);
     }
     const std::vector<std::string> modifiers = {
-        "~", "const ", "static ", "typename "
+        "~", "const ", "static ", "typename ", "inline "
     };
     int modified = 1;
     while(modified)
