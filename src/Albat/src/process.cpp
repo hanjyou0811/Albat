@@ -67,7 +67,7 @@ std::string Albat::processTemplate_Modifiers(std::string &code)
         }
         if(token == "inline")
         {
-            result += "intline ";
+            result += "inline ";
             code = code.substr(6);
             StringUtils::ftrim(code);
             continue;
