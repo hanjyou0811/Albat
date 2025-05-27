@@ -345,6 +345,7 @@ void Albat::processSentence(std::string &code, int typeEndpos, int &returnFlag)
     int braceCount = 0;
     bool inSingleQuote = false;
     bool inDoubleQuote = false;
+    std::string typeStr = "";
     
     // 文の終端を見つける
     int startPos = (typeEndpos != -1) ? typeEndpos : 0;
@@ -387,6 +388,7 @@ void Albat::processSentence(std::string &code, int typeEndpos, int &returnFlag)
                 
                 if (StringUtils::strpos_exlit(statement, "@") >= 0) {
                     while (code[endPos] != ';') endPos++;
+                    typeStr = code.substr(0, startPos);
                     statement = code.substr(startPos, endPos + 1 - startPos);
                 }
                 statement[statement.size() - 1] = ';';
@@ -395,7 +397,7 @@ void Albat::processSentence(std::string &code, int typeEndpos, int &returnFlag)
                 }
                 else {
                     // 普通の文の処理
-                    int ret = setup_Line(statement, "", returnFlag);
+                    int ret = setup_Line(statement, "", typeStr, returnFlag);
                     if (ret) {
                         nextindices.push_back(-1);
                         lines.push_back(statement);
@@ -422,11 +424,12 @@ void Albat::processSentence(std::string &code, int typeEndpos, int &returnFlag)
 void Albat::processTypeDeclaration(const std::string &typeStr, std::string &statement, int &returnFlg)
 {
     std::vector<std::pair<std::string, std::string>> declarations = get_def_input(typeStr, statement);
-    
+    std::string def_typename = typeStr;
+
     for (const auto &[declarationType, definition] : declarations) {
         std::string tmp = definition;
         if (declarationType == "input") {
-            int ret = setup_Line(tmp, declarationType, returnFlg);
+            int ret = setup_Line(tmp, declarationType, def_typename, returnFlg);
             if (ret) {
                 nextindices.push_back(-1);
                 lines.push_back(tmp);
