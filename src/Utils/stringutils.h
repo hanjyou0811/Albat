@@ -51,7 +51,8 @@ namespace StringUtils {
     int find_pairBracket2(std::string &s, int pos);
 
     std::string extra_varname(std::string &str);
-    std::string extra_varname_ns(std::string &str);
+    std::string extra_varname_exlit(std::string &str);
+    std::string extra_varname_for_vardef(std::string &str);
     std::string extra_input_option(std::string &str);
     std::pair<std::string, std::string> extra_VarInfo(const std::string &str);
     std::vector<Match> extractTypeAtVar(const std::string& cond);
