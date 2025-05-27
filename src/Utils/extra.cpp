@@ -38,7 +38,20 @@ namespace StringUtils
         std::string res = "";
         int i = 0;
         while((!isalnum(str[i]) && str[i] != '!' && str[i] != '\'' && str[i] != '\"') && i < str.size()) i++;
-        while((isalnum(str[i]) || str[i] == '!' || str[i] == '\'' || str[i] == '\"') && i < str.size())
+        while((isalnum(str[i]) || str[i] == '!' || str[i] == '\'' || str[i] == '\"' || StringUtils::isOperator(str[i])) && i < str.size())
+        {
+            res += str[i];
+            i++;
+        }
+        return res;
+    }
+
+    std::string extra_varname_for_vardef(std::string &str)
+    {
+        std::string res = "";
+        int i = 0;
+        while((!isalnum(str[i]) && str[i] != '!' && str[i] != '\'' && str[i] != '\"' && str[i] != '*' && str[i] != '&') && i < str.size()) i++;
+        while((isalnum(str[i]) || str[i] == '!' || str[i] == '\'' || str[i] == '\"' || str[i] == '*' || str[i] == '&') && i < str.size())
         {
             res += str[i];
             i++;
