@@ -167,8 +167,20 @@ void Albat::setup_def(std::string &str)
       std::string var = v;
       // if(var[0] == '&' || var[0] == '*') var = var.substr(1);
       StringUtils::trim(var);
-      var = StringUtils::extra_varname_for_vardef(var);
-      res += var + (i == vars.size()-1 ? ";" : ", ");
+      // std::vector<std::string> tmp = StringUtils::split_without_char(var, '=');
+      // std::cerr << tmp[0] << " " << tmp[1] << std::endl;
+      // std::cerr << "var: " << var << std::endl;
+      // if(tmp.size() == 2){
+      //   var += tmp[0];
+      // }else{
+      //   var += tmp[0];
+      // }
+      // std::cerr << "var: " << var << std::endl;
+      if(i == vars.size() - 1){
+        res += var + ";";
+      }else{
+        res += var + ", ";
+      }
       addLocalVar(var, type);
     }
     str = res; 
@@ -211,4 +223,4 @@ void Albat::setup_def(std::string &str)
       str = ""; 
     }
     if(is_lambda == 0) str = strtmp;
-  }
+}
