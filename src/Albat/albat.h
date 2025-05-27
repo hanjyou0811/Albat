@@ -126,7 +126,7 @@ class Albat {
         void processTypeDeclaration(const std::string &typeStr, std::string &statement, int &returnFlag);
 
         //setup.cpp
-        int setup_Line(std::string &str, std::string tp, int &is_return);
+        int setup_Line(std::string &str, std::string tp, std::string &typeStr, int &is_return);
         void setup_def(std::string &str);
 
         //print.cpp
