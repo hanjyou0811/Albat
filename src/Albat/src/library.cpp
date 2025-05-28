@@ -83,15 +83,47 @@ void Albat::library_check(std::string &str)
 void Albat::library_switch(std::string &str)
 {
     LibraryManager &libMan = LibraryManager::getInstance();
-    if(str.empty()) return;
-    if(StringUtils::strpos_exlit_token(str, "cin") >= 0 || StringUtils::strpos_exlit_token(str, "scanf") >= 0)
+    if (str.empty()) return;
     {
-        libMan.switch_Library("FastIO", 0);
-        libMan.requestLibrary("SYNC_WITH_STDIO", 0);
+        bool check1   = StringUtils::strpos_exlit_token(str, "cin")   >= 0;
+        bool check2 = StringUtils::strpos_exlit_token(str, "scanf") >= 0;
+
+        if (check1) {
+            libMan.switch_g_Lib("cin", 1);
+            libMan.switch_Library("FastIO", 0);
+        }
+        if (check2) {
+            libMan.switch_g_Lib("scanf", 1);
+            libMan.switch_Library("FastIO", 0);
+        }
+        int use_cin = libMan.CanUse_g_Lib("cin");
+        int use_scanf = libMan.CanUse_g_Lib("scanf");
+        if(use_cin && use_scanf) {
+            libMan.requestLibrary("SYNC_WITH_STDIO", 1);
+            libMan.switch_Library("SYNC_WITH_STDIO", 0);
+        }else if((use_cin || use_scanf) && !libMan.CanUseLibrary("SYNC_WITH_STDIO")) {
+            libMan.requestLibrary("SYNC_WITH_STDIO", 0);
+        }
     }
-    if(StringUtils::strpos_exlit_token(str, "cout") >= 0 || StringUtils::strpos_exlit_token(str, "printf") >= 0)
     {
-        libMan.switch_Library("FastIO", 0);
-        libMan.requestLibrary("SYNC_WITH_STDIO", 0);
+        bool check1 = StringUtils::strpos_exlit_token(str, "cout") >= 0;
+        bool check2 = StringUtils::strpos_exlit_token(str, "printf") >= 0;
+
+        if (check1) {
+            libMan.switch_g_Lib("cout", 1);
+            libMan.switch_Library("FastIO", 0);
+        }
+        if (check2) {
+            libMan.switch_g_Lib("printf", 1);
+            libMan.switch_Library("FastIO", 0);
+        }
+        int use_cout = libMan.CanUse_g_Lib("cout");
+        int use_printf = libMan.CanUse_g_Lib("printf");
+        if(use_cout && use_printf) {
+            libMan.requestLibrary("SYNC_WITH_STDIO", 1);
+            libMan.switch_Library("SYNC_WITH_STDIO", 0);
+        }else if((use_cout || use_printf) && !libMan.CanUseLibrary("SYNC_WITH_STDIO")) {
+            libMan.requestLibrary("SYNC_WITH_STDIO", 0);
+        }
     }
 }
