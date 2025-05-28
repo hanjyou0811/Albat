@@ -79,18 +79,18 @@ namespace StringUtils{
         x = y = 0;
         for (int i = pos; i < size_S - size_T + 1; i++) {
             if ((x || y) && S[i] == '\\') {
-            i++;
-            continue;
+                i++;
+                continue;
             }
             if (x == 0 && S[i] == '"')
-            y ^= 1;
+                y ^= 1;
             if (y == 0 && S[i] == '\'')
-            x ^= 1;
+                x ^= 1;
             if (x == 0 && y == 0 && S.substr(i, size_T) == T) {
-            if (i && (isalnum(S[i - 1]) || S[i - 1] == '_'))
-                continue;
-            if (i + size_T < size_S && isalnum(S[i + size_T] || S[i + size_T] == '_'))
-                continue;
+                if (i && (isalnum(S[i - 1]) || S[i - 1] == '_'))
+                    continue;
+                if (i + size_T < size_S && isalnum(S[i + size_T] || S[i + size_T] == '_'))
+                    continue;
                 return i;
             }
         }
