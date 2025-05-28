@@ -87,9 +87,11 @@ void Albat::library_switch(std::string &str)
     if(StringUtils::strpos_exlit_token(str, "cin") >= 0 || StringUtils::strpos_exlit_token(str, "scanf") >= 0)
     {
         libMan.switch_Library("FastIO", 0);
+        libMan.requestLibrary("SYNC_WITH_STDIO", 0);
     }
     if(StringUtils::strpos_exlit_token(str, "cout") >= 0 || StringUtils::strpos_exlit_token(str, "printf") >= 0)
     {
         libMan.switch_Library("FastIO", 0);
+        libMan.requestLibrary("SYNC_WITH_STDIO", 0);
     }
 }
