@@ -92,6 +92,7 @@ class Albat {
     private:
         //library.cpp
         void library_check(std::string &str);
+        void library_switch(std::string &str);
 
         //skip.cpp
         int skipPrefixElements(const std::string& str, int pos);
