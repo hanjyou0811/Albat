@@ -25,7 +25,7 @@ int main()
     {
         if(albat.lines[i].substr(0,10) == "int main()")
         {
-            albat.insert(lib, i);
+            albat.nextPtrs[albat.nextindices[i]]->insert(lib, 0);
             break;
         }
     }
