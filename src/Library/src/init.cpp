@@ -353,6 +353,16 @@ void LibraryManager::initUtilityFunctions(){
         lib_positions[func_name] = pos;
     }
     {
+        std::string func_name = "SYNC_WITH_STDIO";
+        std::string func_code = "ios::sync_with_stdio(false);";
+        std::string pos = MAIN;
+        std::vector<std::string> deps;
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
         std::string func_name = "chmax";
         std::string func_code = "template<class S, class T> bool chmax(S &a, T b){if(a<b) { a=b;return 1;} return 0;}";
         std::string pos = HEAD;
