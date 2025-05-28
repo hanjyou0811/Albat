@@ -23,6 +23,7 @@ void Albat::library_check(std::string &str)
     str = Albat::update_operator(str, "/+");
     str = Albat::update_operator(str, "%+");
     StringUtils::update_library_replace(str);
+    Albat::library_switch(str);
     std::vector<std::string> fmt;
     while(1)
     {
@@ -76,5 +77,19 @@ void Albat::library_check(std::string &str)
         //   libMan.insertStill.insert("runLengthDecoding_vec");
         // }
         break;
+    }
+}
+
+void Albat::library_switch(std::string &str)
+{
+    LibraryManager &libMan = LibraryManager::getInstance();
+    if(str.empty()) return;
+    if(StringUtils::strpos_exlit_token(str, "cin") >= 0 || StringUtils::strpos_exlit_token(str, "scanf") >= 0)
+    {
+        libMan.switch_Library("FastIO", 0);
+    }
+    if(StringUtils::strpos_exlit_token(str, "cout") >= 0 || StringUtils::strpos_exlit_token(str, "printf") >= 0)
+    {
+        libMan.switch_Library("FastIO", 0);
     }
 }
