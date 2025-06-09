@@ -36,7 +36,7 @@ namespace StringUtils{
           res.push_back(tmp);
         return res;
     }
-    std::vector<std::string> split_without_chars(std::string s, std::string cs){
+std::vector<std::string> split_without_chars(std::string s, std::string cs){
         int in_Parentheses, in_Brackets, in_Braces, in_String, in_Char;
         in_Parentheses = in_Brackets = in_Braces = in_String = in_Char = 0;
 
@@ -59,19 +59,19 @@ namespace StringUtils{
                 if(s[i] == '{') in_Braces++;
                 if(s[i] == '}') in_Braces--;
             }
-            if(in_String == 0 && s[i] == '"') in_Char ^= 1;
-            if(in_Char == 0 && s[i] == '\'') in_String ^= 1;
+            if(in_Char == 0 && s[i] == '"') in_String ^= 1;
+            if(in_String == 0 && s[i] == '\'') in_Char ^= 1;
             if(in_Parentheses == 0 && in_Brackets == 0 && in_Braces == 0 && in_String == 0 && in_Char == 0 && is_in(s[i]) && tmp.size())
             {
                 res.push_back(tmp);
                 tmp = "";
             }
-            else
+            else if(!(in_Parentheses == 0 && in_Brackets == 0 && in_Braces == 0 && in_String == 0 && in_Char == 0 && is_in(s[i])))
             {
                 tmp += s[i];
             }
         }
-        if(tmp.size() && !is_in(tmp[0])) res.push_back(tmp);
+        if(tmp.size()) res.push_back(tmp);
         return res;
     }
     std::vector<std::string> split_without_str(std::string s, std::string str){
