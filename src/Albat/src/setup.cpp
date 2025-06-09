@@ -70,30 +70,30 @@ int Albat::setup_Line(std::string &str, std::string tp, std::string &typeStr, in
         }
         if(vardef[0] == '!') continue;
         //++--の方は多分使えない
-        if(typeStr.substr(0, 6) == "vector") {
-          loop_opt = 1;
-        }
+        // if(typeStr.substr(0, 6) == "vector") {
+        //   loop_opt = 1;
+        // }
         if(vardef.find("++") != std::string::npos || vardef.find("--") != std::string::npos){
           std::vector<std::string> tmp = StringUtils::split_without_chars(vardef, "+-");
           vardef = head_tmp + "(" + tmp[0] + ");";
-          if(loop_opt)
+          if(typeStr.substr(0, 6) == "vector")
           {
+            loop_opt = 1;
             varName = gen_fresh_varname();
             vardef += "fore(" + varName + "," + tmp[0] + "){";
           }
           vardef += ((loop_opt && !varName.empty())? varName : tmp[0]) + (vardef.find("++") != std::string::npos ? "++" : "--") + ";";
         }else
         {
-          //こっち主に使う
+          if(vardef.empty()) {
+            vardef = gen_fresh_varname();
+          }
           vardef = head_tmp + "(" + vardef  + (loop_opt ? "[i]" : "" )+ ");";
         }
         res += vardef;
       }
       if(loop_opt) res += "}";
       insert(res, lines.size());
-      // nextIndices.push_back(nextPrograms.size());
-      // lines.push_back(res);
-      // lineTypes.push_back(CODETYPES::SENTENCE);
     }else if(type == 2)
     {
       i = 0;
@@ -159,23 +159,17 @@ void Albat::setup_def(std::string &str)
     vars = StringUtils::split_without_char(str, ',');
     for(i=0;i<vars.size();i++)
     {
-      std::string v = vars[i];
-      // vector<string> tmp = StringUtils::split_without_str(v, "++");
-      // if(tmp.size() > 1) assert(0);
-      // tmp = StringUtils::split_without_str(tmp[0], "--");
-      // string var = tmp[0];
-      std::string var = v;
-      // if(var[0] == '&' || var[0] == '*') var = var.substr(1);
+      std::string v = vars[i], var;
+      if(v.find("=") == std::string::npos){
+        std::vector<std::string> tmp = StringUtils::split_without_str(v, "++");
+        // if(tmp.size() > 1) assert(0);
+        tmp = StringUtils::split_without_str(tmp[0], "--");
+        // string var = tmp[0];
+        var = tmp[0];
+      }else{
+        var = v;
+      }
       StringUtils::trim(var);
-      // std::vector<std::string> tmp = StringUtils::split_without_char(var, '=');
-      // std::cerr << tmp[0] << " " << tmp[1] << std::endl;
-      // std::cerr << "var: " << var << std::endl;
-      // if(tmp.size() == 2){
-      //   var += tmp[0];
-      // }else{
-      //   var += tmp[0];
-      // }
-      // std::cerr << "var: " << var << std::endl;
       if(i == vars.size() - 1){
         res += var + ";";
       }else{
