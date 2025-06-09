@@ -112,7 +112,7 @@ namespace StringUtils
     std::vector<Match> extractTypeAtVar(const std::string& cond) {
         // 型名：英字＋英数字/_
         // @ の後の変数名は 0文字以上
-        std::regex re(R"(([A-Za-z_][A-Za-z0-9_]*)?@([A-Za-z_][A-Za-z0-9_]*)?)");
+        std::regex re(R"(([A-Za-z_][A-Za-z0-9_]*)?@([A-Za-z_][A-Za-z0-9_]*)?((\+\+|--))?)");
         auto begin = std::sregex_iterator(cond.begin(), cond.end(), re);
         auto end   = std::sregex_iterator{};
         std::vector<Match> results;
@@ -124,7 +124,7 @@ namespace StringUtils
             if (isInLiteral(cond, start)) continue;
             results.push_back({
                 m[1].str(),
-                m[2].str()
+                m[2].str() + (m[3].matched ? m[3].str() : "")
             });
         }
         return results;
