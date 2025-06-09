@@ -225,6 +225,14 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
                 std::string varName = x.varName;
                 std::string typeName = x.typeName;
                 std::string vars;
+                std::string opt = "";
+                if(varName.find("--") != std::string::npos){
+                    opt = "--";
+                    varName = varName.substr(0, varName.find("--"));
+                }else if(varName.find("++") != std::string::npos){
+                    opt = "++";
+                    varName = varName.substr(0, varName.find("++"));
+                }
                 int varName_isEmpty = varName.empty();
                 if(varName_isEmpty){
                     varName = gen_fresh_varname();
@@ -240,13 +248,12 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
                         typeEndpos = i;
                     }
                 }
-                StringUtils::replace_AtoZ_exlit_token(blockName, typeName + "@" + (varName_isEmpty?"":varName), varName+(varName_isEmpty?"--":""));
+                StringUtils::replace_AtoZ_exlit_token(blockName, typeName + "@" + (varName_isEmpty?"":varName), varName);
                 processSentence(vars, typeEndpos, returnFlag);
             }
         }
         {
             int end = StringUtils::find_pairBracket1(blockName, 0);
-
         }
         code = code.substr(blockEndpos);
 
