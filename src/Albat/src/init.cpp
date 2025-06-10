@@ -25,7 +25,7 @@ void Albat::init()
         "size_t", "int8_t", "int16_t", "int32_t", "int64_t", "uint8_t", "uint16_t", "uint32_t", "uint64_t",
         "__int8_t", "__int16_t", "__int32_t", "__int64_t", "__int128_t", "__uint8_t",
         "__uint16_t","__uint32_t","__uint64_t","__uint128_t","float","double","long double","bool",
-        "string","auto","cpp_int", "mint", "modint", "mod_int", "MexSet", "UnionFind", "auto"};
+        "string","auto","cpp_int", "mint", "modint", "mod_int", "MexSet", "UnionFind", "auto", "istream", "ostream"};
 
     STLtypenames = {"pair",         "tuple", "vector",         "stack",
             "queue",        "deque", "priority_queue", "set",
