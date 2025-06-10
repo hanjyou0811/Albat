@@ -13,7 +13,6 @@ void Albat::parse(std::string &code, std::string opt, int nestlevel, LINETYPES c
     {
         StringUtils::ftrim(code);
         if(code.empty()) break;
-	    if(code.empty()) break;
         if(codeType != LINETYPES::PROGRAM && code[0] == '{')
         {
             code = code.substr(1);
@@ -24,6 +23,10 @@ void Albat::parse(std::string &code, std::string opt, int nestlevel, LINETYPES c
             endType = 2;
         }
         if(code.empty() && endType == 2) break;
+        if(processDirectives(code))
+        {
+            continue;
+        }
         if(checkEndType(code, endType, extraSentence, returnFlg))
         {
             break;
@@ -33,11 +36,6 @@ void Albat::parse(std::string &code, std::string opt, int nestlevel, LINETYPES c
             continue;
         }
         if(isValidComment(code))
-        {
-            continue;
-        }
-
-        if(processDirectives(code))
         {
             continue;
         }
