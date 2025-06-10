@@ -101,8 +101,11 @@ void Albat::library_switch(std::string &str)
         if(use_cin && use_scanf) {
             libMan.requestLibrary("SYNC_WITH_STDIO", 1);
             libMan.switch_Library("SYNC_WITH_STDIO", 0);
-        }else if((use_cin || use_scanf) && !libMan.CanUseLibrary("SYNC_WITH_STDIO")) {
+            libMan.requestLibrary("CIN_TIE", 1);
+            libMan.switch_Library("CIN_TIE", 0);
+        }else if(use_cin && !libMan.CanUseLibrary("SYNC_WITH_STDIO") && !libMan.CanUseLibrary("CIN_TIE")) {
             libMan.requestLibrary("SYNC_WITH_STDIO", 0);
+            libMan.requestLibrary("CIN_TIE", 0);
         }
     }
     {
@@ -122,8 +125,11 @@ void Albat::library_switch(std::string &str)
         if(use_cout && use_printf) {
             libMan.requestLibrary("SYNC_WITH_STDIO", 1);
             libMan.switch_Library("SYNC_WITH_STDIO", 0);
-        }else if((use_cout || use_printf) && !libMan.CanUseLibrary("SYNC_WITH_STDIO")) {
+            libMan.requestLibrary("CIN_TIE", 1);
+            libMan.switch_Library("CIN_TIE", 0);
+        }else if(use_cout && !libMan.CanUseLibrary("SYNC_WITH_STDIO") && !libMan.CanUseLibrary("CIN_TIE")) {
             libMan.requestLibrary("SYNC_WITH_STDIO", 0);
+            libMan.requestLibrary("CIN_TIE", 0);
         }
     }
 }
