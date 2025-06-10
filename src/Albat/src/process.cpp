@@ -27,8 +27,10 @@ int Albat::processCodeStart(std::string &code, LINETYPES codeType, std::string &
 
 int Albat::processDirectives(std::string &code)
 {
+    LibraryManager &libMan = LibraryManager::getInstance();
     if (code.substr(0, 13) == "//interactive" && (isspace(code[13])|| code[13] == '\0'))
     {
+        libMan.switch_Library("FastIO_flush", 1);
         code = code.substr(13);
         return 1;
     }
