@@ -5,96 +5,82 @@
 namespace StringUtils{
     void update_Function_main(std::string &s, int pos)
     {
-        bool inSingleQuote = false;  // シングルクォート内
-        bool inDoubleQuote = false;  // ダブルクォート内
+        bool inSingleQuote = false;
+        bool inDoubleQuote = false;
         
-        // 直前と現在の文字の状態を追跡
         char lastChar = ';';
         char lastNonWhitespaceChar = ';';
         
-        // 適切なmain関数またはブロックが見つかったかどうか
         bool foundMainOrBlock = false;
         
-        // 位置指定があれば、その位置より前の部分を保存
         std::string prefix;
         std::string targetCode = s;
-        
+
         if (pos >= 0) {
             prefix = targetCode.substr(0, pos);
             targetCode = targetCode.substr(pos);
         }
-        
-        // コードを1文字ずつ解析
-        for (int i = 0; i < targetCode.size() && !foundMainOrBlock; i++) {
-            // エスケープシーケンスのスキップ
+
+        for (int i = 0; i < targetCode.size() && !foundMainOrBlock;) {
             if (targetCode[i] == '\\') {
                 i += 2;
                 continue;
             }
-            
-            // シングルクォートの処理
+
             if (!inDoubleQuote && targetCode[i] == '\'') {
                 inSingleQuote = !inSingleQuote;
                 i++;
                 continue;
             }
-            
-            // ダブルクォートの処理
+
             if (!inSingleQuote && targetCode[i] == '"') {
                 inDoubleQuote = !inDoubleQuote;
                 i++;
                 continue;
             }
-            
-            // 文字列リテラル内の文字はスキップ
+
             if (inSingleQuote || inDoubleQuote) {
                 i++;
                 continue;
             }
-            
-            // コメント行のスキップ
+
             if (targetCode[i] == '#') {
                 lastChar = lastNonWhitespaceChar = ';';
                 while (i < targetCode.size() && targetCode[i] != '\n') i++;
                 continue;
             }
-            
-            // ブロック開始かmain関数の検出
-            if (lastChar == ';' || lastChar == '}' || std::isspace(lastChar)) {
-                // ブロック開始の検出
+
+            if (lastChar == ';' || lastChar == '}' || std::isspace(static_cast<unsigned char>(lastChar))) {
                 if ((lastNonWhitespaceChar == ';' || lastNonWhitespaceChar == '}') && 
                     targetCode[i] == '{') {
                     foundMainOrBlock = true;
+                    break;
                 }
-                
-                // main関数の検出
-                if (i + 4 <= targetCode.size() && targetCode.substr(i, 4) == "main") {
+
+                if (i + 4 < targetCode.size() && targetCode.substr(i, 4) == "main") {
                     int j = i + 4;
-                    // main後の空白をスキップ
-                    while (j < targetCode.size() && std::isspace(targetCode[j])) j++;
-                    // 関数開始括弧があればmain関数として認識
+                    while (j < targetCode.size() && std::isspace(static_cast<unsigned char>(targetCode[j]))) j++;
                     if (j < targetCode.size() && targetCode[j] == '(') {
                         foundMainOrBlock = true;
+                        break;
                     }
                 }
             }
-            
-            // 非空白文字を記録
-            if (!std::isspace(targetCode[i])) {
+
+            if (!std::isspace(static_cast<unsigned char>(targetCode[i]))) {
                 lastNonWhitespaceChar = targetCode[i];
             }
-            
+
             lastChar = targetCode[i];
             i++;
         }
-        
-        // main関数もブロックも見つからなければ、コード全体をブロックで囲む
+
         if (!foundMainOrBlock) {
             targetCode = "{" + targetCode + "}\n";
-            s = prefix + targetCode;
         }
-    }
 
+        s = prefix + targetCode;
+    }
     std::string update_macro_all(std::string &str) {
         while (1) {
             int i = StringUtils::strpos_exlit_token(str, "all(");
