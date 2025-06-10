@@ -90,15 +90,21 @@ void Albat::library_switch(std::string &str)
 
         if (check1) {
             libMan.switch_g_Lib("cin", 1);
-            libMan.switch_Library("FastIO", 0);
+            if(libMan.CanUseLibrary("FastIO")){
+                libMan.requestLibrary("FastIO", 1);
+                libMan.switch_Library("FastIO_flush", 1);
+            }
         }
         if (check2) {
             libMan.switch_g_Lib("scanf", 1);
-            libMan.switch_Library("FastIO", 0);
+            if(libMan.CanUseLibrary("FastIO")){
+                libMan.requestLibrary("FastIO", 1);
+                libMan.switch_Library("FastIO_flush", 1);
+            }
         }
         int use_cin = libMan.CanUse_g_Lib("cin");
         int use_scanf = libMan.CanUse_g_Lib("scanf");
-        if(use_cin && use_scanf) {
+        if((use_cin && use_scanf) || libMan.CanUseLibrary("FastIO") || libMan.CanUseLibrary("FastIO_flush")) {
             libMan.requestLibrary("SYNC_WITH_STDIO", 1);
             libMan.switch_Library("SYNC_WITH_STDIO", 0);
             libMan.requestLibrary("CIN_TIE", 1);
@@ -114,15 +120,21 @@ void Albat::library_switch(std::string &str)
 
         if (check1) {
             libMan.switch_g_Lib("cout", 1);
-            libMan.switch_Library("FastIO", 0);
+            if(libMan.CanUseLibrary("FastIO")){
+                libMan.requestLibrary("FastIO", 1);
+                libMan.switch_Library("FastIO_flush", 1);
+            }
         }
         if (check2) {
             libMan.switch_g_Lib("printf", 1);
-            libMan.switch_Library("FastIO", 0);
+            if(libMan.CanUseLibrary("FastIO")){
+                libMan.requestLibrary("FastIO", 1);
+                libMan.switch_Library("FastIO_flush", 1);
+            }
         }
         int use_cout = libMan.CanUse_g_Lib("cout");
         int use_printf = libMan.CanUse_g_Lib("printf");
-        if(use_cout && use_printf) {
+        if((use_cout && use_printf) || libMan.CanUseLibrary("FastIO") || libMan.CanUseLibrary("FastIO_flush")) {
             libMan.requestLibrary("SYNC_WITH_STDIO", 1);
             libMan.switch_Library("SYNC_WITH_STDIO", 0);
             libMan.requestLibrary("CIN_TIE", 1);
