@@ -364,6 +364,105 @@ void LibraryManager::initUtilityFunctions(){
         lib_positions[func_name] = pos;
     }
     {
+        std::string func_name = "istream";
+        std::string func_code = "";
+        std::string pos = HEAD;
+
+        std::vector<std::string> deps = {"istream_pair", "istream_vector"};
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "istream_pair";
+        std::string func_code = "template <class T, class U>\nistream &operator>>(istream &is, pair<T, U> &p) {\n    is >> p.first >> p.second;\n    return is;\n}\n";
+        std::string pos = HEAD;
+        
+        std::vector<std::string> deps;
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "istream_vector";
+        std::string func_code = "template <class T>\nistream &operator>>(istream &is, vector<T> &v) {\n    fore(x, v) is >> x;\n    return is;\n}\n";
+        std::string pos = HEAD;
+
+        std::vector<std::string> deps;
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "ostream";
+        std::string func_code = "";
+        std::string pos = HEAD;
+
+        std::vector<std::string> deps = {"ostream_pair", "ostream_set", "ostream_map", "ostream_vector", "ostream_vector_vector"};
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "ostream_pair";
+        std::string func_code = "template <class T, class U>\nostream &operator<<(ostream &os, const pair<T, U> &p) {\n    os << p.first << \" \" << p.second;\n    return os;\n}\n";
+        std::string pos = HEAD;
+
+        std::vector<std::string> deps;
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "ostream_set";
+        std::string func_code = "template <class T>\nostream &operator<<(ostream &os, set<T> st) {\n    fore(x, st) {\n        os << x << \" \";\n    }\n    return os;\n}\n";
+        std::string pos = HEAD;
+
+        std::vector<std::string> deps;
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "ostream_map";
+        std::string func_code = "template <class T1, class T2>\nostream &operator<<(ostream &os, map<T1, T2> mp) {\n    fore(x, mp) {\n        os <<  \" | \" << x.first << \"->\" << x.second << \" | \";\n    }\n    return os;\n}\n";
+        std::string pos = HEAD;
+        
+        std::vector<std::string> deps;
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "ostream_vector";
+        std::string func_code = "template <class T>\nostream &operator<<(ostream &os, const vector<T> &v) {\n    fore(x, v) os << x << ' ';\n    return os;\n}\n";
+        std::string pos = HEAD;
+        
+        std::vector<std::string> deps;
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "ostream_vector_vector";
+        std::string func_code = "template <class T>\nostream &operator<<(ostream &os, const vector<vector<T>> &v) {\n    fore(vv, v) {\n        fore(x, vv) os << x << ' ';\n        os << '\\n';\n    }\n    return os;\n}\n";
+        std::string pos = HEAD;
+
+        std::vector<std::string> deps;
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_dependencies[func_name] = deps;
+        lib_positions[func_name] = pos;
+    }
+    {
         std::string func_name = "SYNC_WITH_STDIO";
         std::string func_code = "ios::sync_with_stdio(false);";
         std::string pos = MAIN;
