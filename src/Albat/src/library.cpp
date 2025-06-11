@@ -94,6 +94,8 @@ void Albat::library_switch(std::string &str)
                 libMan.requestLibrary("FastIO", 1);
                 libMan.switch_Library("FastIO_flush", 1);
             }
+            //todo
+            libMan.requestLibrary("istream", 0);
         }
         if (check2) {
             libMan.switch_g_Lib("scanf", 1);
@@ -124,6 +126,8 @@ void Albat::library_switch(std::string &str)
                 libMan.requestLibrary("FastIO", 1);
                 libMan.switch_Library("FastIO_flush", 1);
             }
+            //todo
+            libMan.requestLibrary("ostream", 0);
         }
         if (check2) {
             libMan.switch_g_Lib("printf", 1);
