@@ -49,7 +49,11 @@ public:
     {
         return g_Lib[lib_name];
     }
-    
+
+    void insertLibrary(std::string lib_name, std::string lib_code, std::string lib_pos, std::vector<std::string> lib_deps = {})
+    {
+        registerLibrary(lib_name, lib_code, lib_pos, lib_deps);
+    }
 
 private:
     LibraryManager() = default;

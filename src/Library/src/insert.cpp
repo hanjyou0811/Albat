@@ -73,3 +73,21 @@ void LibraryManager::requestLibrary(const std::string &name, int already = 0) {
         insert_is_Still.insert(name);
     }
 }
+
+void LibraryManager::registerLibrary(
+    const std::string& lib_name,
+    const std::string& lib_code,
+    const std::string& lib_pos,
+    const std::vector<std::string>& lib_deps
+) {
+  if(lib_name.empty() || lib_pos.empty()) {
+    return; // Invalid library name or position
+  }
+  lib_names.push_back(lib_name);
+  lib_Ident[lib_name] = lib_code;
+  lib_positions[lib_name] = lib_pos;
+  insert_is_Still.insert(lib_name);
+  if (!lib_deps.empty()) {
+      lib_dependencies[lib_name] = lib_deps;
+  }
+}
