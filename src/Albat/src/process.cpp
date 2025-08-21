@@ -257,6 +257,23 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
         {
             int end = StringUtils::find_pairBracket1(blockName, 0);
         }
+        if(blockType == 1 && token == "function") {
+            LibraryManager &libMan = LibraryManager::getInstance();
+            {
+                std::string lib_name, lib_code, lib_pos;
+                std::vector<std::string> lib_deps;
+
+                lib_name = lib_code = blockName;
+                StringUtils::trim(lib_name);
+                StringUtils::trim(lib_code);
+                lib_code += ";\n";
+                lib_pos = "head";
+                lib_deps = {};
+
+                libMan.insertLibrary(lib_name, lib_code, lib_pos, lib_deps);
+                libMan.switch_Library(lib_name, 1);
+            }
+        }
         code = code.substr(blockEndpos);
 
         // ライブラリチェック 
