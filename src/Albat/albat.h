@@ -128,7 +128,7 @@ class Albat {
 
         //setup.cpp
         int setup_Line(std::string &str, std::string tp, std::string &typeStr, int &is_return);
-        void setup_def(std::string &str);
+        int setup_def(std::string &str);
 
         //print.cpp
         std::vector<std::pair<std::string, std::string>> get_def_input(std::string type_str, std::string vardef_str);

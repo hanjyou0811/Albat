@@ -135,12 +135,14 @@ int Albat::setup_Line(std::string &str, std::string tp, std::string &typeStr, in
   return 1;
 }
 
-void Albat::setup_def(std::string &str)
+//is_lambda を返す
+int Albat::setup_def(std::string &str)
 {
     std::string type = "";
     std::vector<std::string> vars;
     std::string res = "";
     int i = 0, j = 0, is_lambda = 0;
+    int had_lambda = 0;
     library_check(str);
     for(i=1;i<str.size();i++)
     {
@@ -206,15 +208,19 @@ void Albat::setup_def(std::string &str)
           nextindices.push_back(-1);
           tmpstr = str.substr(sj, block_size);
           tmpstr += ";";
+          is_lambda = 1;
           insert(tmpstr, lines.size());
           str = str.substr(sj + block_size);
-          is_lambda = 1;
           break;
         }
         if(!isspace(str[si])) pre = str[si];
       }
-      if(is_lambda == 1) continue;
+      if(is_lambda == 1){
+        had_lambda = 1;
+        continue;
+      }
       str = ""; 
     }
     if(is_lambda == 0) str = strtmp;
+    return had_lambda;
 }

@@ -269,7 +269,6 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
                 lib_code += ";\n";
                 lib_pos = "head";
                 lib_deps = {};
-
                 libMan.insertLibrary(lib_name, lib_code, lib_pos, lib_deps);
                 libMan.switch_Library(lib_name, 1);
             }
@@ -278,7 +277,6 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
 
         // ライブラリチェック 
         library_check(blockName);
-
         
         // main関数の自動生成
         if (blockName.empty() && codeType == LINETYPES::PROGRAM && !mainFunctionCreated) {
@@ -411,7 +409,7 @@ void Albat::processSentence(std::string &code, int typeEndpos, int &returnFlag)
             if ((!isExplicit && code[endPos] == ',') || code[endPos] == ';') {
                 // 文を抽出
                 std::string statement = code.substr(startPos, endPos + 1 - startPos);
-                
+
                 if (StringUtils::strpos_exlit(statement, "@") >= 0) {
                     while (code[endPos] != ';') endPos++;
                     typeStr = code.substr(0, startPos);
@@ -463,10 +461,12 @@ void Albat::processTypeDeclaration(const std::string &typeStr, std::string &stat
             }
         }
         else {
-            setup_def(tmp);
+            int is_lambda = setup_def(tmp);
             nextindices.push_back(-1);
-            lines.push_back(tmp);
-            lineTypes.push_back(LINETYPES::SENTENCE);
+            if(!is_lambda){
+                lines.push_back(tmp);
+                lineTypes.push_back(LINETYPES::SENTENCE);
+            }
         }
     }
 }
