@@ -62,24 +62,29 @@ void Albat::processLoopMacro(std::string &macroName)
         macroName = "for(int " + args[0] + " = " + args[1] + "; " + 
                     args[0] + " < " + args[2] + "; " + 
                     args[0] + " += " + args[3] + ")";
+        addLocalVar(args[0], "int");
     }
     else if (args.size() == 4 && isRRep) {
         macroName = "for(int " + args[0] + " = " + args[2] + "-1; " + 
                     args[0] + " >= " + args[1] + "; " + 
                     args[0] + " -= " + args[3] + ")";
+        addLocalVar(args[0], "int");
     }
     else if (args.size() == 3 && isRep) {
         macroName = "for(int " + args[0] + " = " + args[1] + "; " + 
                     args[0] + " < " + args[2] + "; " + 
                     args[0] + "++)";
+        addLocalVar(args[0], "int");
     }
     else if (args.size() == 3 && isRRep) {
         macroName = "for(int " + args[0] + " = " + args[2] + "-1; " + 
                     args[0] + " >= " + args[1] + "; " + 
                     args[0] + "--)";
+        addLocalVar(args[0], "int");
     }
     else if (args.size() == 2 && isFore) {
         macroName = "for(auto &" + args[0] + " : " + args[1] + ")";
+        addLocalVar(args[0], "auto");
     }
     else {
         macroName = "Error!!!";
