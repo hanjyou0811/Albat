@@ -462,8 +462,8 @@ void Albat::processTypeDeclaration(const std::string &typeStr, std::string &stat
         }
         else {
             int is_lambda = setup_def(tmp);
-            nextindices.push_back(-1);
             if(!is_lambda){
+                nextindices.push_back(-1);
                 lines.push_back(tmp);
                 lineTypes.push_back(LINETYPES::SENTENCE);
             }
