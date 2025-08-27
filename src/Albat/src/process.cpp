@@ -218,7 +218,7 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
         
         // ブロック名とブロック内容を取得
         std::string blockName = code.substr(0, blockEndpos);
-        if(blockName.substr(0, 5) == "while" && StringUtils::strpos_exlit(blockName, "@") != -1)
+        if(blockType == 1 && StringUtils::strpos_exlit(blockName, "@") != -1)
         {
             std::string cond_expr = blockName.substr(5);
             StringUtils::trim(cond_expr);
@@ -257,6 +257,8 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
         {
             int end = StringUtils::find_pairBracket1(blockName, 0);
         }
+
+
         if(blockType == 1 && token == "function") {
             LibraryManager &libMan = LibraryManager::getInstance();
             {
