@@ -6,7 +6,7 @@ int Albat::setup_Line(std::string &str, std::string tp, std::string &typeStr, in
   std::string head_tmp = "",tmp_vars = "", tmp = "", varName = "";
   int i = 0, type = (tp == "input" ? 1 : 0);
   int loop_opt = 0;
-  std::string res = "";
+  std::string res = "", index_S = ""; 
   std::vector<std::string> vars;
   library_check(str);
   if(type || str[i] == '$' || str[i] == '@')
@@ -45,11 +45,11 @@ int Albat::setup_Line(std::string &str, std::string tp, std::string &typeStr, in
         std::string tmp = StringUtils::extra_input_option(str);
         if(tmp.size()){
           StringUtils::removeAllWhitespace(tmp);
-          if(tmp.substr(0,5)=="size="){
+          if(tmp.substr(0,4)=="size"){
             loop_opt = 1;
             std::string size = tmp.substr(5);
             varName = gen_fresh_varname();
-            res += ("rep(" + varName + "0," + size + "){");
+            res += ("rep(" + varName + ",0," + size + "){");
           }
         }
       }
@@ -88,7 +88,8 @@ int Albat::setup_Line(std::string &str, std::string tp, std::string &typeStr, in
           if(vardef.empty()) {
             vardef = gen_fresh_varname();
           }
-          vardef = head_tmp + "(" + vardef  + (loop_opt ? "[i]" : "" )+ ");";
+          index_S = "[" + (!varName.empty() ? varName : "i") + "]";
+          vardef = head_tmp + "(" + vardef  + (loop_opt ? index_S : "" )+ ");";
         }
         res += vardef;
       }
