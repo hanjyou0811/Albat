@@ -220,7 +220,7 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
         std::string blockName = code.substr(0, blockEndpos);
         if(blockType == 1 && StringUtils::strpos_exlit(blockName, "@") != -1)
         {
-            std::string cond_expr = blockName.substr(5);
+            std::string cond_expr = blockName.substr(token.size());
             StringUtils::trim(cond_expr);
             std::vector<Match> matches = StringUtils::extractTypeAtVar(cond_expr);
             for(auto &x : matches){
