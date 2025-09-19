@@ -6,7 +6,7 @@ using namespace std;
 
 int main()
 {
-    string code;
+    string code, str;
     char buf[10000];
     while(1)
     {
@@ -14,6 +14,7 @@ int main()
         code += string(buf, siz);
         if(siz < 10000) break;
     }
+    str = code;
     StringUtils::update_Function_main(code);
     Albat albat;
     albat.parse(code, "", 0, LINETYPES::PROGRAM);
@@ -30,6 +31,9 @@ int main()
         }
     }
     albat.print(0);
+    printf("//code\n/*\n");
+    printf("%s\n", str.c_str());
+    printf("*/\n");
     // albat.debug(0);
     return 0;
 }
