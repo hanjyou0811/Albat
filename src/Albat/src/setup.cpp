@@ -132,6 +132,40 @@ int Albat::setup_Line(std::string &str, std::string tp, std::string &typeStr, in
     {
       is_return = 0;
     }
+    // tuple
+    if(str[i] == '(') {
+      int pos = StringUtils::find_pairBracket1(str, i);
+      if(pos == -1) return 1; //syntax error?
+      std::string str_l = str.substr(i, pos + 1);
+      int j = pos + 1;
+      while(isspace(str[j]) || str[j] == '=') {
+        j++;
+      }
+      pos = StringUtils::find_pairBracket1(str, j);
+      if(pos == -1) return 1; //syntax error?
+      std::string str_r = str.substr(j, pos-j+1);
+      auto v_l = StringUtils::split_without_char(str_l.substr(1, str_l.size() - 2), ','), v_r = StringUtils::split_without_char(str_r.substr(1, str_r.size() - 2), ',');
+      if(v_l.size() != v_r.size()) return 1; //syntax error?
+      int v_siz = v_l.size();
+      std::vector<std::string> tmp_vars;
+      for(int ii = 0;ii < v_siz;ii++) {
+        std::string var = gen_fresh_varname();
+        addLocalVar(var, "auto");
+        tmp_vars.push_back(var);
+      }
+      // move 150 line ?
+      std::string tmpstr = "";
+      for(int ii = 0;ii< v_siz;ii++) {
+        std::string type = "auto ";
+        std::string type_var = type + tmp_vars[ii] + " = " + v_r[ii];
+        tmpstr += type_var + ";\n";
+      }
+      for(int ii=0;ii<v_siz;ii++) {
+        tmpstr += (v_l[ii]+ " = " + tmp_vars[ii] + ";\n");
+      }
+      insert(tmpstr, lines.size());
+      str = "";
+    }
   }
   return 1;
 }
