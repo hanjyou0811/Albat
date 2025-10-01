@@ -106,13 +106,38 @@ int Albat::setup_Line(std::string &str, std::string tp, std::string &typeStr, in
         str = str.substr(1, str.size()-2);
       }
       vars = StringUtils::split_without_char(str, ',');
+      std::vector<std::string> args;
+      std::string sep = "";
       for(int i=0;i<vars.size();i++)
       {
+        int index = 0, siz;
         std::string vardef = vars[i];
+        siz = vardef.size();
         StringUtils::trim(vardef);
-        vardef = head_tmp + "(" + vardef + ");";
+        while(vardef[index] != '=' && index < siz) {index++;}
+        tmp = vardef.substr(0,index);
+        StringUtils::trim(tmp);
+        while(vardef[index] == '=' && index < siz) {index++;}
+        while(isspace(vardef[index]) && index < siz) {index++;}
+        if(tmp == "sep") {
+          sep = vardef.substr(index);
+          continue;
+        }
+        args.push_back(vardef);
+        // vardef = head_tmp + "(" + vardef + ");";
+        // nextindices.push_back(-1);
+        // lines.push_back(vardef);
+        // lineTypes.push_back(LINETYPES::SENTENCE);
+      }
+      int sep_is_empty = sep.empty();
+      for(std::string &arg : args) {
+        arg = head_tmp + "(" + arg;
+        if(!sep_is_empty) {
+          arg += ", " + sep;
+        }
+        arg += ");";
         nextindices.push_back(-1);
-        lines.push_back(vardef);
+        lines.push_back(arg);
         lineTypes.push_back(LINETYPES::SENTENCE);
       }
     }
