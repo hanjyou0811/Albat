@@ -72,10 +72,13 @@ void Albat::library_check(std::string &str)
         if(fmt.size() == 3){
             libMan.requestLibrary("sum", 0);
         }
-        // fmt = StringUtils::find_Function(str, "runLengthDecoding_vec()");
-        // if(fmt.size() == 3){
-        //   libMan.insertStill.insert("runLengthDecoding_vec");
-        // }
+        fmt = StringUtils::find_Function(str, "[]");
+        if(fmt.size() == 3){
+            libMan.requestLibrary("Slice", 0);
+            // function;
+            std::string tmp = StringUtils::update_slice(fmt);
+            if(!tmp.empty()) str = tmp;
+        }
         break;
     }
 }
