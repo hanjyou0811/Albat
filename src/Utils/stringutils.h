@@ -63,6 +63,8 @@ namespace StringUtils {
     std::string update_macro_len(std::string &str);
     std::string updaet_macro_st_bound(std::string &str);
     std::string update_macro_count(std::string &str);
+    // fmtを受け取る
+    std::string update_slice(std::vector<std::string> &fmt);
 
     int size_block(std::string &str);
     int size_brackets(std::string &st);
