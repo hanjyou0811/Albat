@@ -174,6 +174,32 @@ namespace StringUtils{
         return str;
     }
     
+    std::string update_slice(std::vector<std::string> &fmt) {
+        std::string str;
+        StringUtils::trim(fmt[0]);
+        std::string s, pre_str;
+        int fmt0_idx = fmt[0].size() - 1;
+        while((isalnum(fmt[0][fmt0_idx]) || fmt[0][fmt0_idx] == '_') && fmt0_idx >= 0){
+            fmt0_idx--;
+        }
+        s = fmt[0].substr(fmt0_idx+1);
+        pre_str = fmt[0].substr(0, fmt0_idx+1);
+        std::vector<std::string> pos = {"0", "0", "1"};
+        if(StringUtils::strpos_exlit(fmt[1], ":", 0) != -1) {
+            auto v_l = StringUtils::split_without_char(fmt[1], ':');
+            if(v_l.size() == 2) {
+                pos[0] = v_l[0];
+                pos[1] = v_l[1];
+            }else{
+                pos[0] = v_l[0];
+                pos[1] = v_l[1];
+                pos[2] = v_l[2];
+            }
+            s = "Slice(" + s + ", " + pos[0] + ", " + pos[1] + ", " + pos[2] + ")";
+            str = pre_str + s + fmt[2];
+        }
+        return str;
+    }
     void update_library_replace(std::string &code)
     {
         trim(code);
