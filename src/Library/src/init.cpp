@@ -556,6 +556,40 @@ void LibraryManager::initUtilityFunctions(){
         lib_positions[func_name] = pos;
         lib_dependencies[func_name] = deps;
     }
+    {
+        std::string func_name = "Slice";
+        std::string func_code = "";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+        deps.push_back("Slice_vec");
+        deps.push_back("Slice_str");
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+    {
+        std::string func_name = "Slice_vec";
+        std::string func_code = "template<class T> vector<T> Slice(vector<T> &vec, int st, int ed, int step) {\n    int siz = vec.size();\n    int i,j,k;\n    vector<T> res;\n    if(siz == 0) return res;\n    k = step %+ siz;\n    if(step > 0) {\n        for(i = st, j = (st %+ siz); i < ed; i += step, j += k) {\n            if(j >= siz) j -= siz;\n            res.push_back(vec[j]);\n        }\n    }else{\n        for(i = st, j = (st %+ siz); i > ed; i += step, j += k) {\n            if(j >= siz) j -= siz;\n            res.push_back(vec[j]);\n        }\n    }\n    return res;\n}\n";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+        deps.push_back("_mod");
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+    {
+        std::string func_name = "Slice_str";
+        std::string func_code = "string Slice(string &str, int st, int ed, int step) {\n    int siz = str.size();\n    int i,j,k;\n    string res;\n    if(siz == 0) return res;\n    k = step %+ siz;\n    if(step > 0) {\n        for(i = st, j = (st %+ siz); i < ed; i += step, j += k) {\n            if(j >= siz) j -= siz;\n            res += str[j];\n        }\n    }else{\n        for(i = st, j = (st %+ siz); i > ed; i += step, j += k) {\n            if(j >= siz) j -= siz;\n            res += str[j];\n        }\n    }\n    return res;\n}\n";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+        deps.push_back("_mod");
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
 }
 
 void LibraryManager::init() {
