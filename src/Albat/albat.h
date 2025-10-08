@@ -113,7 +113,7 @@ class Albat {
         int processDirectives(std::string &code);
         void processTempalteParams(const std::string &tempstr);
         std::string processTemplate_Modifiers(std::string &code);
-        int determineBlockType(const std::string &code, std::string &token, char nextChar, int typeEndpos);
+        int determineBlockType(const std::string &code, std::string &token, char nextChar, int typeEndpos, std::string &prefixStr);
         void processBlock(std::string &code, int blockType, const std::string &token,
             int typeEndPos, const std::string &prefixStr, 
             LINETYPES codeType, const std::string &opt, int nestLevel,

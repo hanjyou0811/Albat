@@ -126,7 +126,7 @@ void Albat::processTempalteParams(const std::string &tempstr)
     }
 }
 
-int Albat::determineBlockType(const std::string &code, std::string &token, char nextChar, int typeEndpos)
+int Albat::determineBlockType(const std::string &code, std::string &token, char nextChar, int typeEndpos, std::string &prefixStr)
 {
     int blockType = 0;
     if (typeEndpos >= 0 || code.substr(0, 8) == "operator")
@@ -266,9 +266,10 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
                 std::vector<std::string> lib_deps;
 
                 lib_name = lib_code = blockName;
+                lib_code = prefixStr + lib_code;
                 StringUtils::trim(lib_name);
                 StringUtils::trim(lib_code);
-                lib_code += ";\n";
+                lib_code += "{};\n";
                 lib_pos = "head";
                 lib_deps = {};
                 libMan.insertLibrary(lib_name, lib_code, lib_pos, lib_deps);
