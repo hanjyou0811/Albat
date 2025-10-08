@@ -55,7 +55,7 @@ void Albat::parse(std::string &code, std::string opt, int nestlevel, LINETYPES c
             }
         }
         auto [token, nextChar] = StringUtils::nextToken(code);
-        int blockType = determineBlockType(code, token, nextChar, typeEndpos);
+        int blockType = determineBlockType(code, token, nextChar, typeEndpos, prefixStr);
         if (blockType || code[0] == '{')
         {
             processBlock(code, blockType, token, typeEndpos, prefixStr, codeType, 
