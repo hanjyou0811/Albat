@@ -74,10 +74,12 @@ void Albat::library_check(std::string &str)
         }
         fmt = StringUtils::find_Function(str, "[]");
         if(fmt.size() == 3){
-            libMan.requestLibrary("Slice", 0);
             // function;
             std::string tmp = StringUtils::update_slice(fmt);
-            if(!tmp.empty()) str = tmp;
+            if(!tmp.empty()) {
+                str = tmp;
+                libMan.requestLibrary("Slice", 0);
+            }
         }
         break;
     }
