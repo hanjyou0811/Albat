@@ -274,7 +274,6 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
                 lib_code = libMan.getLibraryIdentifier(lib_name) + lib_code;
                 lib_pos = lib_name;
                 lib_deps = {};
-                std::cerr << lib_code << std::endl;
                 libMan.insertLibrary(lib_name, lib_code, lib_pos, lib_deps);
                 libMan.switch_Library(lib_name, 1);
             }
