@@ -17,13 +17,16 @@ void Albat::print(int depth)
         printf("    ");
       }
       code = lines[i];
-      if(code == "using namespace std;" && (libMan.CanUseLibrary("FastIO") || libMan.CanUseLibrary("FastIO_flush")))
+      if(code == "using namespace std;")
       {
         code += '\n';
-        if(libMan.CanUseLibrary("FastIO_flush")) {
+        code += libMan.getLibraryIdentifier("prtype");
+        if (libMan.CanUseLibrary("FastIO") || libMan.CanUseLibrary("FastIO_flush")) {
+          if(libMan.CanUseLibrary("FastIO_flush")) {
           code += libMan.getLibraryIdentifier("FastIO_flush");
-        }else{
-          code += libMan.getLibraryIdentifier("FastIO");
+          }else{
+            code += libMan.getLibraryIdentifier("FastIO");
+          }
         }
       }
       printf("%s", code.c_str());
