@@ -1,38 +1,53 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
+#include <string>
 
-void Albat::print(int depth)
+std::string Albat::print(int depth)
 {
     LibraryManager& libMan = LibraryManager::getInstance();
     int i = 0, j = 0;
     std::string code = "";
+    //ラムダ式でいい感じにやる
+    auto emit = [&](const std::string &s) {
+      #ifdef __EMSCRIPTEN__
+        code += s;
+      #else
+        printf("%s", s.c_str());
+      #endif
+    };
     for(i = 0;i<lines.size();i++)
     {
       if(lineTypes[i] == LINETYPES::LIBRARY){
-        nextPtrs[nextindices[i]]->print(depth);
+        code += nextPtrs[nextindices[i]]->print(depth);
         continue;
       }
       for(j = 0;j<depth;j++)
       {
-        printf("    ");
+        emit("    ");
       }
+      #ifdef __EMSCRIPTEN__
+      code += lines[i];
+      #else
       code = lines[i];
+      #endif
       if(code == "using namespace std;")
       {
         code += '\n';
         code += libMan.getLibraryIdentifier("prtype");
         if (libMan.CanUseLibrary("FastIO") || libMan.CanUseLibrary("FastIO_flush")) {
           if(libMan.CanUseLibrary("FastIO_flush")) {
-          code += libMan.getLibraryIdentifier("FastIO_flush");
+            code += libMan.getLibraryIdentifier("FastIO_flush");
           }else{
             code += libMan.getLibraryIdentifier("FastIO");
           }
         }
       }
+      #ifndef __EMSCRIPTEN__
       printf("%s", code.c_str());
+      #endif
       if(lineTypes[i] == LINETYPES::BLOCKW){
         if(nextPtrs[nextindices[i]]->isValidEmptyBlock()){
-          printf(";\n");
+          emit(";\n");
           continue;
         }
       }
@@ -40,14 +55,14 @@ void Albat::print(int depth)
         || lineTypes[i] == LINETYPES::BLOCKW
         )
       {
-        printf("{\n");
+        emit("{\n");
       }else
       {
-        printf("\n");
+        emit("\n");
       }
       if(nextindices[i] >= 0)
       {
-        nextPtrs[nextindices[i]]->print(depth+1);
+        code += nextPtrs[nextindices[i]]->print(depth+1);
       }
       if(lineTypes[i] == LINETYPES::BLOCKS
         || lineTypes[i] == LINETYPES::BLOCKW
@@ -55,11 +70,12 @@ void Albat::print(int depth)
       {
         for(j = 0;j<depth;j++)
         {
-          printf("    ");
+          emit("    ");
         }
-        printf("}\n");
+        emit("}\n");
       }
     }
+    return code;
 }
 
 void Albat::debug(int depth)
