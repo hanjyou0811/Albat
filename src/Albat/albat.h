@@ -85,7 +85,7 @@ class Albat {
 
         //parse.cpp
         void parse(std::string &code, std::string opt, int nestlevel, LINETYPES codeType);
-        void print(int depth);
+        std::string print(int depth);
         void debug(int depth);
         //insert.cpp
         void insert(std::string &str, int pos);
