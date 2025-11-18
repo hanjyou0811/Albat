@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Albat_WASM</title>
+<style>
+  body {
+    font-family: monospace;
+    margin: 20px;
+    background-color: #f4f4f4;
+    color: #222;
+  }
+
+  h2 { color: #333; }
+
+  #tabBar {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    max-width: 800px;
+    background-color: #e6e6e6;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    background-color: #dcdcdc;
+    border-right: 1px solid #bbb;
+    user-select: none;
+    font-size: 14px;
+  }
+
+  .tab.active {
+    background-color: #ffffff;
+    border-bottom: 2px solid #ffffff;
+    font-weight: bold;
+  }
+
+  #editorContainer {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 0 0 6px 6px;
+    background-color: #1e1e1e;
+    width: 100%;
+    max-width: 800px;
+    height: 300px;
+    overflow: hidden;
+  }
+
+  #lineNumbers {
+    background-color: #252526;
+    color: #858585;
+    padding: 8px 6px;
+    text-align: right;
+    user-select: none;
+    font-size: 14px;
+    line-height: 20px;
+    white-space: pre;
+  }
+
+  #inputText {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 8px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 20px;
+    background-color: #1e1e1e;
+    color: #dcdcdc;
+    overflow: auto;
+  }
+
+  button {
+    margin-top: 10px;
+    background-color: #007acc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+  }
+
+  pre {
+    background-color: #f8f8f8;
+    padding: 10px;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-width: 800px;
+  }
+</style>
+</head>
+<body>
+  <h2>デモ</h2>
+  <div id="tabBar"></div>
+  <div id="editorContainer">
+    <div id="lineNumbers">1</div>
+    <textarea id="inputText" spellcheck="false" placeholder="// code"></textarea>
+  </div>
+  
+
+  <button id="runButton" disabled>実行</button>
+
+  <pre>結果:
+<span id="output"></span></pre>
+
+  <script src="bin/albat.js"></script>
+  <script>
+    let processString = null;
+
+    const textarea = document.getElementById('inputText');
+    const lineNumbers = document.getElementById('lineNumbers');
+
+    const sampleFiles = ["sample/io.al", "sample/op.al", "sample/sample2.al"];
+    const samples = {};
+
+    async function loadFile(path) {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error("ファイルが読み込めませんでした: " + path);
+      return await response.text();
+    }
+
+    async function initSamples() {
+      for (const file of sampleFiles) {
+        const name = file.split("/").pop();
+        samples[name] = await loadFile(file);
+      }
+      createTabs();
+    }
+    function createTabs() {
+      const tabBar = document.getElementById('tabBar');
+      const textarea = document.getElementById('inputText');
+
+      Object.keys(samples).forEach((filename, idx) => {
+        const tab = document.createElement('div');
+        tab.className = 'tab';
+        tab.textContent = filename;
+        tab.onclick = () => selectTab(filename);
+        if (idx === 0) tab.classList.add('active');
+        tabBar.appendChild(tab);
+      });
+
+      selectTab(Object.keys(samples)[0]);
+    }
+
+    function selectTab(filename) {
+      const textarea = document.getElementById('inputText');
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.toggle('active', tab.textContent === filename);
+      });
+      textarea.value = samples[filename];
+      updateLineNumbers();
+    }
+
+    function updateLineNumbers() {
+      const lines = textarea.value.split('\n').length;
+      lineNumbers.textContent = Array.from({ length: lines }, (_, i) => i + 1).join('\n');
+    }
+
+    textarea.addEventListener('input', updateLineNumbers);
+    textarea.addEventListener('scroll', () => {
+      lineNumbers.scrollTop = textarea.scrollTop;
+    });
+
+    textarea.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 1;
+        updateLineNumbers();
+      }
+    });
+
+    initSamples();
+    updateLineNumbers();
+
+    Module['onRuntimeInitialized'] = () => {
+      console.log("wasm！");
+      processString = Module.cwrap('processString', 'string', ['string']);
+
+      const button = document.getElementById('runButton');
+      button.disabled = false;
+      button.onclick = () => {
+        const input = textarea.value;
+        const result = processString(input);
+        // console.log(result);
+        document.getElementById('output').innerText = result;
+      };
+    };
+  </script>
+</body>
+</html>
