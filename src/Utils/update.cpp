@@ -269,4 +269,34 @@ namespace StringUtils{
         
         // if(strpos_exlit_token(code, "biseek") >= 0) libMan.insertStill.insert("biseek");
     }
-}
+    std::string update_non_default_arg(const std::string &code) {
+        // function
+        std::string tmp = code;
+        std::string res = "";
+        int i = 0;
+        while (tmp[i] != '(') i += 1;
+        //引数の前
+        res = code.substr(0, i);
+        res += "(";
+        tmp = tmp.substr(i+1, tmp.size()-(i+1)-1);
+        if(!tmp.empty()){
+            auto vec = StringUtils::split_without_char_signature(tmp, ',');
+            for(i = 0;i<vec.size();i++) {
+                std::string str = vec[i];
+                //デフォルト引数を持つ関数の処理
+                {
+                    std::string target = "=";
+                    int target_pos = StringUtils::strpos(str, target, 0);
+                    if (target_pos != -1) {
+                        str = str.substr(0, target_pos);
+                    }
+                }
+                StringUtils::trim(str);
+                res += str;
+                if(i != vec.size() - 1) res += ", ";
+            }
+        }
+        res += ");\n";
+        return res;
+    }
+    }
