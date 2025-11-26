@@ -89,4 +89,40 @@ std::vector<std::string> split_without_chars(std::string s, std::string cs){
 
         return res;
     }
+    std::vector<std::string> split_without_char_signature(std::string s, char c){
+        int in_Parentheses, in_Brackets, in_Braces, in_String, in_Char, in_Angle;
+        in_Parentheses = in_Brackets = in_Braces = in_String = in_Char = in_Angle = 0;
+
+        std::vector<std::string> res;
+        std::string tmp;
+
+        for(int i=0;i<s.size();i++)
+        {
+            if(in_String == 0 && in_Char == 0)
+            {
+                if(s[i] == '(') in_Parentheses++;
+                if(s[i] == ')') in_Parentheses--;
+                if(s[i] == '[') in_Brackets++;
+                if(s[i] == ']') in_Brackets--;
+                if(s[i] == '{') in_Braces++;
+                if(s[i] == '}') in_Braces--;
+                if(s[i] == '<') in_Angle++;
+                if(s[i] == '>') in_Angle--;
+            }
+            if(in_String == 0 && s[i] == '"') in_Char ^= 1;
+            if(in_Char == 0 && s[i] == '\'') in_String ^= 1;
+            if(in_Parentheses == 0 && in_Brackets == 0 && in_Braces == 0 && in_Angle == 0 && in_String == 0 && in_Char == 0 && s[i] == c && tmp.size())
+            {
+                res.push_back(tmp);
+                tmp = "";
+            }
+            else
+            {
+                tmp += s[i];
+            }
+        }
+        if(tmp.size())
+          res.push_back(tmp);
+        return res;
+    }
 }
