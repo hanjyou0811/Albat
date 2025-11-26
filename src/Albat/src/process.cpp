@@ -270,7 +270,7 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
                 lib_code = prefixStr + lib_code;
                 StringUtils::trim(lib_name);
                 StringUtils::trim(lib_code);
-                lib_code += ";\n";
+                lib_code = StringUtils::update_non_default_arg(lib_code);
                 lib_code = libMan.getLibraryIdentifier(lib_name) + lib_code;
                 lib_pos = lib_name;
                 lib_deps = {};
