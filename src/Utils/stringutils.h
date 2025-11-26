@@ -44,6 +44,7 @@ namespace StringUtils {
     std::vector<std::string> split_without_char(std::string s, char c);
     std::vector<std::string> split_without_chars(std::string s, std::string cs);
     std::vector<std::string> split_without_str(std::string s, std::string str);
+    std::vector<std::string> split_without_char_signature(std::string, char c);
 
     std::vector<std::string> find_Function(std::string &s, std::string format);
     std::vector<std::string> find_Function_main(std::string &s, std::string format);
@@ -65,6 +66,7 @@ namespace StringUtils {
     std::string update_macro_count(std::string &str);
     // fmtを受け取る
     std::string update_slice(std::vector<std::string> &fmt);
+    std::string update_non_default_arg(const std::string &code);
 
     int size_block(std::string &str);
     int size_brackets(std::string &st);
