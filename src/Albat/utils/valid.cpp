@@ -1,11 +1,29 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
 
-struct PreprocessorInfo{
-    std::string name;
-    LINETYPES type;
-    int need_handle;
-};
+void Albat::Preprocess_handle(std::string &line, LINETYPES type)
+{
+    if(type == LINETYPES::DEFINE)
+    {
+        auto vs = StringUtils::split_without_char(line, ' ');
+        if(vs.size() < 3) {
+            return ;
+        }
+        std::string directive = vs[0];
+        std::string define_A = vs[1];
+        std::string define_B = line.substr(directive.size() + define_A.size() + 2);
+        StringUtils::trim(define_B);
+        if (isValidtypename(define_B, ' ')) {
+            addTempVarType(define_A);
+        }
+        return ;
+    }
+    if(type == LINETYPES::INCLUDE)
+    {
+        //#include file でfile開いてくっつける的な処理をかく
+        return ;
+    }
+}
 
 int Albat::isValidEmptyBlock()
 {
@@ -21,56 +39,57 @@ int Albat::isValidEmptyBlock()
 
 int Albat::isValidPreprocessor(std::string &code)
 {
-    if(code.empty()) return (0);
+    if(code.empty() || code[0] != '#') return (0);
     
     struct PreprocessorInfo {
         std::string name;
         LINETYPES type;
-        bool need_handle;
     };
     
+    std::string preprocess_line = code.substr(1);
+    StringUtils::ftrim(preprocess_line);
+
     std::vector<PreprocessorInfo> preprocessorList = {
-        {"#include", LINETYPES::INCLUDE, true},
-        {"# include", LINETYPES::INCLUDE, true},
-        {"#define", LINETYPES::DEFINE, true},
-        {"# define", LINETYPES::DEFINE, true},
-        {"#ifdef", LINETYPES::IFDEF, true},
-        {"# ifdef", LINETYPES::IFDEF, true},
-        {"#endif", LINETYPES::ENDIF, false},
-        {"# undef", LINETYPES::UNDEF, true},
-        {"#undef", LINETYPES::UNDEF, true},
-        {"#pragma", LINETYPES::PRAGMA, true},
-        {"# pragma", LINETYPES::PRAGMA, true}
+        {"define", LINETYPES::DEFINE},
+        {"include", LINETYPES::INCLUDE},
+        {"ifdef", LINETYPES::IFDEF},
+        {"endif", LINETYPES::ENDIF},
+        {"undef", LINETYPES::UNDEF},
+        {"pragma", LINETYPES::PRAGMA}
     };
-    
+    int need_handle = 0;
     for(const auto &pp : preprocessorList)
     {
-        if(code.substr(0, pp.name.size()) == pp.name)
+        if(preprocess_line.substr(0, pp.name.size()) == pp.name)
         {
             int i = pp.name.size();  // まずディレクティブの名前をスキップ
             
             // 改行かファイル終端まで進む
-            while(i < code.size() && code[i] != '\n' && code[i] != '\r')
+            while(i < preprocess_line.size() && preprocess_line[i] != '\n' && preprocess_line[i] != '\r')
             {
                 // include用特殊処理
                 if(pp.type == LINETYPES::INCLUDE)
                 {
-                    if((code[i] == '>' || code[i] == '"') && i > 0 && 
-                       (code[i-1] != '\\' || (i > 1 && code[i-2] == '\\')))
+                    if((preprocess_line[i] == '>' || preprocess_line[i] == '"') && i > 0 && 
+                       (preprocess_line[i-1] != '\\' || (i > 1 && preprocess_line[i-2] == '\\')))
                     {
                         i++;
                         break;
                     }
                 }
+                if(pp.type == LINETYPES::DEFINE)
+                {
+                    need_handle = 1;
+                }
                 i++;
             }
-            
-            
-            std::string tmp = code.substr(0, i);
-            code = code.substr(i);
-            
+            std::string tmp = preprocess_line.substr(0, i);
+            if(need_handle) {
+                Preprocess_handle(tmp, pp.type);
+            }   
+            code = preprocess_line.substr(i);
             nextindices.push_back(-1);
-            lines.push_back(tmp);
+            lines.push_back("#"+tmp);
             lineTypes.push_back(pp.type);
             
             return (1);
@@ -109,6 +128,7 @@ int Albat::isValidComment(std::string &code)
     return (0);
 }
 
+//1 : typenames, 2 : STLtypenames, 3 : tmptypenames
 int Albat::isValidtypename(std::string &str, char nex)
 {
     if(str.empty()) return (0);
@@ -138,9 +158,17 @@ int Albat::isValidtypename(std::string &str, char nex)
             }
         }
     }
-    if( typenames.count(str) || STLtypenames.count(str) || tmptypenames.count(str))
+    if( typenames.count(str) )
     {
         return (1);
+    }
+    if( STLtypenames.count(str) )
+    {
+        return (2);
+    }
+    if( tmptypenames.count(str) )
+    {
+        return (3);
     }
     int i = 0;
     while( i < str.size() && (isalnum(str[i]) || str[i] == '_'))
@@ -168,7 +196,7 @@ int Albat::isValidtypename(std::string &str, char nex)
     }
     for(i = 0; i < str.size(); i++)
     {
-        if(STLtypenames.count(str.substr(0,i)))
+        if(STLtypenames.count(str.substr(0,i)) || tmptypenames.count(str.substr(0,i)))
         {
             int cnt = 0;
             for(int j = i; j < str.size(); j++)
