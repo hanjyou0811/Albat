@@ -73,6 +73,9 @@ class Albat {
         int isValidtypename(std::string &str, char nex);
         int isValidFunction(const std::string &code);
 
+        //valid.cpp helper
+        void Preprocess_handle(std::string &line, LINETYPES type);
+
         //get.cpp
         std::pair<int, int> getExpressionIndexAndLength(std::string expr, int pos, bool forward = true);
         // std::pair<int,int> get_Expr_index_and_length_before(std::string expr, int pos);
