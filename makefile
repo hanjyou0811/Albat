@@ -6,7 +6,6 @@ WASM_FLAGS = -O3 \
 	-s USE_WEBGL2=1 \
 	-s WASM=1 \
 	-s ALLOW_MEMORY_GROWTH=1 \
-	-s DEMANGLE_SUPPORT=1 \
 	-s EXPORTED_FUNCTIONS='["_main"]' \
 	-s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]' \
 	-s MINIFY_HTML=0
