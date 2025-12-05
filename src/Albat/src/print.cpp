@@ -52,3 +52,29 @@ std::string Albat::print(int depth)
     }
     return code;
 }
+
+void Albat::debug(int depth)
+{
+    int i, j;
+  
+    std::set<std::string>::iterator it1;
+    std::map<std::string,std::string>::iterator it2;
+    printf("vartype  :");
+    for(it1=typenames.begin();it1!=typenames.end();it1++) printf(" (%s)", it1->c_str()); puts("");
+    printf("tvartype :");
+    for(it1=STLtypenames.begin();it1!=STLtypenames.end();it1++) printf(" (%s)", it1->c_str()); puts("");
+    printf("tmptypes : ");
+    for(it1=tmptypenames.begin();it1!=tmptypenames.end();it1++) printf(" (%s)", it1->c_str()); puts("");
+    printf("localvar :");
+    for(it2=localVars.begin();it2!=localVars.end();it2++) printf(" (%s->%s)", it2->first.c_str(), it2->second.c_str()); puts("");
+    printf("globalvar:");
+    for(it2=globalVars.begin();it2!=globalVars.end();it2++) printf(" (%s->%s)", it2->first.c_str(), it2->second.c_str()); puts("");
+    printf("argvar   :");
+    for(it2=argVars.begin();it2!=argVars.end();it2++) printf(" (%s->%s)", it2->first.c_str(), it2->second.c_str()); puts("");
+    for(i=0;i<lines.size();i++)
+    {
+      for(j=0;j<depth;j++) printf(" ");
+      printf("%s\n", lines[i].c_str());
+      if(nextindices[i] >= 0) nextPtrs[nextindices[i]]->debug(depth + 1);
+    }
+}
