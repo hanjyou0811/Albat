@@ -1,7 +1,10 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
 
-std::string readFileToString(const std::filesystem::path& absolute_path) {
+std::string readFileToString(const fs::path& absolute_path) {
+    #ifdef __EMSCRIPTEN__
+    return "";
+    #endif
     if (!absolute_path.is_absolute()) {
         return "";
     }
@@ -21,9 +24,12 @@ std::string readFileToString(const std::filesystem::path& absolute_path) {
 }
 
 std::string GetWorkingDir() {
+    #ifdef __EMSCRIPTEN__
+    return "";
+    #endif
     try {
-        return std::filesystem::current_path().string();
-    } catch (const std::filesystem::filesystem_error& e) {
+        return fs::current_path().string();
+    } catch (const fs::filesystem_error& e) {
         // std::cerr << "Error getting current path: " << e.what() << std::endl;
         return "";
     }
