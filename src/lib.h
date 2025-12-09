@@ -2,6 +2,6 @@
 #define LIB_H
 
 #include <string>
-#include <map>
+#include <getopt.h>
 
 #endif // lib.h

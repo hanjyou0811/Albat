@@ -285,7 +285,7 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
         
         // main関数の自動生成
         if (blockName.empty() && codeType == LINETYPES::PROGRAM && !mainFunctionCreated) {
-            blockName = "int main()";
+            blockName = MAIN_BLOCK;
             mainFunctionCreated = true;
         }
          

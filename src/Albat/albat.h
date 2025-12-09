@@ -7,11 +7,17 @@
 #include <map>
 #include <filesystem>
 #include <fstream>
+#ifdef __EMSCRIPTEN__
+namespace fs = std::__fs::filesystem;
+#else
+namespace fs = std::filesystem;
+#endif
 #include <sstream>
 #include "../Library/library.h"
 
 //debug
 #include <iostream>
+extern std::string MAIN_BLOCK;
 
 enum class LINETYPES{
     PROGRAM,
