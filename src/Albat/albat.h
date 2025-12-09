@@ -5,6 +5,9 @@
 #include <string>
 #include <set>
 #include <map>
+#include <filesystem>
+#include <fstream>
+#include <sstream>
 #include "../Library/library.h"
 
 //debug

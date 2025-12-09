@@ -1,6 +1,35 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
 
+std::string readFileToString(const std::filesystem::path& absolute_path) {
+    if (!absolute_path.is_absolute()) {
+        return "";
+    }
+
+    std::ifstream file(absolute_path, std::ios::in);
+
+    if (!file.is_open()) {
+        return "";
+    }
+    try {
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        return buffer.str();
+    } catch (const std::exception& e) {
+        return "";
+    }
+}
+
+std::string GetWorkingDir() {
+    try {
+        return std::filesystem::current_path().string();
+    } catch (const std::filesystem::filesystem_error& e) {
+        // std::cerr << "Error getting current path: " << e.what() << std::endl;
+        return "";
+    }
+}
+
+//lineに対しての処理が適当なので後から直す(返り値をstd::stringにするなど)
 void Albat::Preprocess_handle(std::string &line, LINETYPES type)
 {
     if(type == LINETYPES::DEFINE)
@@ -16,11 +45,29 @@ void Albat::Preprocess_handle(std::string &line, LINETYPES type)
         if (isValidtypename(define_B, ' ')) {
             addTempVarType(define_A);
         }
+        line = "#" + line;
         return ;
     }
     if(type == LINETYPES::INCLUDE)
     {
+        auto IncludeFilenameValidate = [](const std::string &filename) -> bool {
+            return true;
+        };
         //#include file でfile開いてくっつける的な処理をかく
+        auto vs = StringUtils::split_without_char(line, ' ');
+        if(vs.size() != 2) return ;
+        std::string filename = vs[1];
+        if(!IncludeFilenameValidate(filename)) {
+            return ;
+        }
+        std::string filecontent = readFileToString(GetWorkingDir() + "/" + filename);
+        if(filecontent.empty()) {
+            line = "#" + line;
+            return ;
+        }
+        filecontent = "//" + line + "\n" + filecontent;
+        insert(filecontent, 0);
+        line = "//" + line;
         return ;
     }
 }
@@ -70,12 +117,7 @@ int Albat::isValidPreprocessor(std::string &code)
                 // include用特殊処理
                 if(pp.type == LINETYPES::INCLUDE)
                 {
-                    if((preprocess_line[i] == '>' || preprocess_line[i] == '"') && i > 0 && 
-                       (preprocess_line[i-1] != '\\' || (i > 1 && preprocess_line[i-2] == '\\')))
-                    {
-                        i++;
-                        break;
-                    }
+                    need_handle = 1;
                 }
                 if(pp.type == LINETYPES::DEFINE)
                 {
@@ -86,10 +128,12 @@ int Albat::isValidPreprocessor(std::string &code)
             std::string tmp = preprocess_line.substr(0, i);
             if(need_handle) {
                 Preprocess_handle(tmp, pp.type);
-            }   
+            }else{
+                tmp = "#" + tmp;
+            }
             code = preprocess_line.substr(i);
             nextindices.push_back(-1);
-            lines.push_back("#"+tmp);
+            lines.push_back(tmp);
             lineTypes.push_back(pp.type);
             
             return (1);
