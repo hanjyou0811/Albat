@@ -64,6 +64,11 @@ $(BUILD_DIR_WASM)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(FLAGS) $(INCLUDES) -c $< -o $@
 
+
+# ===== test =====
+test: native
+	./run_sample.sh
+
 # ===== Clean =====
 clean:
 	rm -rf build $(BIN_DIR)
