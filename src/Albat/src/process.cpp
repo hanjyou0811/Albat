@@ -222,7 +222,7 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
             }
             std::string namespaceDef = code.substr(0, blockEndpos);
             StringUtils::trim(namespaceDef);
-            addSpace(namespaceDef);
+            addSpace(namespaceDef+"::");
         }
         else {
             blockEndpos = 0;
