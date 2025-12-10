@@ -33,4 +33,5 @@ void Albat::init()
             "unordered_map", "Fenwick_tree","_SegTree", "SegTree_pt_max",
             "SegTree_pt_min", "SegTree_pt_sum", "WeightedUnionFind"
             };
+    spacenames = {"std::"};
 }

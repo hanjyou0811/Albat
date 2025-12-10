@@ -208,6 +208,17 @@ int Albat::isValidtypename(std::string &str, char nex)
             }
         }
     }
+    for(const auto &spacename : spacenames) 
+    {
+        if(str.substr(0, spacename.size()) == spacename) {
+            std::string suffix = str.substr(spacename.size());
+            StringUtils::ftrim(suffix);
+            if(!suffix.empty())
+                return isValidtypename(suffix, nex);
+            else
+                return 1;
+        }
+    }
     if( typenames.count(str) )
     {
         return (1);
@@ -246,6 +257,7 @@ int Albat::isValidtypename(std::string &str, char nex)
     }
     for(i = 0; i < str.size(); i++)
     {
+        //<>
         if(STLtypenames.count(str.substr(0,i)) || tmptypenames.count(str.substr(0,i)))
         {
             int cnt = 0;

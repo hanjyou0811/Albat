@@ -49,7 +49,7 @@ class Albat {
         std::vector<int> nextindices;
         std::vector<Albat *> nextPtrs;
 
-        std::set<std::string> typenames, STLtypenames, tmptypenames;
+        std::set<std::string> typenames, STLtypenames, tmptypenames, spacenames;
         // std::map<std::string, std::string> 
 
         std::map<std::string, std::string> localVars, globalVars, argVars;
@@ -70,6 +70,7 @@ class Albat {
         //var.cpp
         void addVarType(const std::string &type);
         void addTempVarType(const std::string &type);
+        void addSpace(const std::string &space);
         void addLocalVar(const std::string &name, const std::string &type);
         void addGlobalVar(const std::string &name, const std::string &type);
         void addArgVar(const std::string &name, const std::string &type);

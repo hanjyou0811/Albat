@@ -173,6 +173,9 @@ int Albat::determineBlockType(const std::string &code, std::string &token, char 
     else if (token == "struct" || token == "class") {
         blockType = 3;
     }
+    else if (token == "namespace") {
+        blockType = 4;
+    }
     return blockType;
 }
 
@@ -211,6 +214,15 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
             } else {
                 addTempVarType(parts.back());
             }
+        }
+        else if(blockType == 4) {
+            // ネームスペース名を取得
+            for (blockEndpos = 0; blockEndpos < code.size(); blockEndpos++) {
+                if (code[blockEndpos] == '{' || code[blockEndpos] == ';') break;
+            }
+            std::string namespaceDef = code.substr(0, blockEndpos);
+            StringUtils::trim(namespaceDef);
+            addSpace(namespaceDef);
         }
         else {
             blockEndpos = 0;

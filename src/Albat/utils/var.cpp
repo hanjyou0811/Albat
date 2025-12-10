@@ -15,6 +15,13 @@ void Albat::addTempVarType(const std::string &type) {
     }
 }
 
+void Albat::addSpace(const std::string &space) {
+    spacenames.insert(space);
+    for (auto *child : nextPtrs) {
+        child->addSpace(space);
+    }
+}
+
 void Albat::addLocalVar(const std::string &name, const std::string &type)
 {
     auto [Varname, val] = StringUtils::extra_VarInfo(name);
