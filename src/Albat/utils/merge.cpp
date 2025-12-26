@@ -30,4 +30,5 @@ void Albat::mergeParent(Albat *parentNode)
     parent = parentNode;
     merges(parentNode->typenames, parentNode->tmptypenames, parentNode->globalVars,
         parentNode->localVars, parentNode->argVars);
+    PrefixStrs = parentNode->PrefixStrs;
 }

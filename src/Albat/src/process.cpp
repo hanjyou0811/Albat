@@ -207,7 +207,7 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
             std::string structDef = code.substr(0, blockEndpos);
             StringUtils::trim(structDef);
             std::vector<std::string> parts = StringUtils::split_without_char(structDef, ' ');
-            
+
             // 型情報を追加
             if (prefixStr.empty()) {
                 addVarType(parts.back());
@@ -227,7 +227,7 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
         else {
             blockEndpos = 0;
         }
-        
+
         // ブロック名とブロック内容を取得
         std::string blockName = code.substr(0, blockEndpos);
         if(blockType == 1 && StringUtils::strpos_exlit(blockName, "@") != -1)
@@ -276,18 +276,37 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
             {
                 std::string lib_name, lib_code, lib_pos;
                 std::vector<std::string> lib_deps;
-
+                std::string template_ = "";
+                int pos = StringUtils::strrpos_exlit(this->name, " ", this->name.size() - 1);  
+                int size = this->name.substr(pos + 1).size();
                 lib_name = "prtype";
                 lib_code = blockName;
-                lib_code = prefixStr + lib_code;
-                StringUtils::trim(lib_name);
-                StringUtils::trim(lib_code);
-                lib_code = StringUtils::update_non_default_arg(lib_code);
-                lib_code = libMan.getLibraryIdentifier(lib_name) + lib_code;
-                lib_pos = lib_name;
-                lib_deps = {};
-                libMan.insertLibrary(lib_name, lib_code, lib_pos, lib_deps);
-                libMan.switch_Library(lib_name, 1);
+                if(pos != -1) {
+                    std::string prefixStr_copy = prefixStr;
+                    StringUtils::trim(prefixStr_copy);
+                    if(!prefixStr_copy.empty()) {
+                        if(prefixStr_copy.back() == '>') template_ = prefixStr_copy.substr(0, prefixStr_copy.size() - 1);
+                    }else{
+                        template_ = "template <";
+                    }
+                    for(int i=0;i<tmptypenames.size();i++) {
+                        if(i != 0 || !prefixStr_copy.empty()) template_ += ", ";
+                        template_ += "typename " + *std::next(tmptypenames.begin(), i);
+                    }
+                    if(!template_.empty()) template_ += ">";
+                }
+                if((blockName.substr(0, size).size() == 0)
+                        ||  name.substr(pos + 1) != blockName.substr(0, size)) {
+                    lib_code = (template_.empty() ? prefixStr : template_) + " " + lib_code;
+                    StringUtils::trim(lib_name);
+                    StringUtils::trim(lib_code);
+                    lib_code = StringUtils::update_non_default_arg(lib_code);
+                    lib_code = libMan.getLibraryIdentifier(lib_name) + lib_code;
+                    lib_pos = lib_name;
+                    lib_deps = {};
+                    libMan.insertLibrary(lib_name, lib_code, lib_pos, lib_deps);
+                    libMan.switch_Library(lib_name, 1);
+                }
             }
         }
         code = code.substr(blockEndpos);

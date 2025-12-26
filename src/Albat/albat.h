@@ -44,7 +44,7 @@ class Albat {
 
         std::string name;
         Albat *parent = nullptr;
-        std::vector<std::string> lines;
+        std::vector<std::string> lines, PrefixStrs;
         std::vector<LINETYPES> lineTypes;
         std::vector<int> nextindices;
         std::vector<Albat *> nextPtrs;
@@ -71,6 +71,7 @@ class Albat {
         void addVarType(const std::string &type);
         void addTempVarType(const std::string &type);
         void addSpace(const std::string &space);
+        void addPrefixStr(const std::string &prefixStr);
         void addLocalVar(const std::string &name, const std::string &type);
         void addGlobalVar(const std::string &name, const std::string &type);
         void addArgVar(const std::string &name, const std::string &type);
