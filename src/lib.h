@@ -3,5 +3,8 @@
 
 #include <string>
 #include <getopt.h>
+#include <unistd.h>
+#include <limits.h>
+#include <cstdlib>
 
 #endif // lib.h

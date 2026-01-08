@@ -157,13 +157,58 @@ void LibraryManager::initMathLibraries()
         lib_positions[func_name] = pos;
     }
     {
-       std::string func_name = "divnum";
-       std::string func_code = "template<typename T>\nvector<T> divNum(T n) { \n    vector<T> S;\n    for (int i = 1; 1LL*i*i <= n; i++) if (n%i == 0) { S.push_back(i); if (i*i != n) S.push_back(n / i); }\n    sort(S.begin(), S.end());\n    return S;\n}\n";
-       std::string pos = HEAD;
+        std::string func_name = "divnum";
+        std::string func_code = "template<typename T>\nvector<T> divNum(T n) { \n    vector<T> S;\n    for (int i = 1; 1LL*i*i <= n; i++) if (n%i == 0) { S.push_back(i); if (i*i != n) S.push_back(n / i); }\n    sort(S.begin(), S.end());\n    return S;\n}\n";
+        std::string pos = HEAD;
     
-       lib_names.push_back(func_name);
+        lib_names.push_back(func_name);
         lib_Ident[func_name] = func_code;
         lib_positions[func_name] = pos; 
+    }
+    {
+        std::string func_name = "popcount";
+        std::string func_code = "#define popc __builtin_popcount\n";
+        std::string pos = HEAD;
+
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "popcountl";
+        std::string func_code = "#define popcl __builtin_popcountl\n";
+        std::string pos = HEAD;
+
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "bit_enumerate";
+        std::string func_code = "template<typename T>\nvector<T> bit_enumerate(T x) {\n    vector<T> res;\n    for (T s = x; ; s = (s - 1) & x) {\n        res.push_back(s);\n        if (s == 0) break;\n    }\n    return res;\n}\n";
+        std::string pos = HEAD;
+
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "hasbit";
+        std::string func_code = "template<typename T>\nbool hasbit(T x, T k) {\n    return ((x >> k) & 1) != 0;\n}\n";
+        std::string pos = HEAD;
+
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+    }
+    {
+        std::string func_name = "bitlen";
+        std::string func_code = "template<class T> inline int bitlen(T x){\n    int len = 0;\n    do {\n        len++;\n        x >>= 1;\n    } while (x);\n    return len;\n}\n";
+        std::string pos = HEAD;
+
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
     }
     // {
     //     std::string func_name = "sum";

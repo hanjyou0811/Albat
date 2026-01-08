@@ -82,9 +82,38 @@ std::string ReadCmdArg(int argc, char *argv[]) {
     }
     return ret;
 }
+
 int main(int argc, char **argv)
 {
 #ifndef __EMSCRIPTEN__
+    if (argc >= 2 && std::string(argv[1]) == "exec") {
+        if (argc != 5) {
+            fprintf(stderr, "Usage: %s exec <source_file> <input_file> <output_file>\n", argv[0]);
+            return 1;
+        }
+
+        auto get_exec_dir = []() -> std::string {
+            char buffer[PATH_MAX];
+            ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+            if (len != -1) {
+                buffer[len] = '\0';
+                std::string path(buffer);
+                size_t pos = path.find_last_of('/');
+                if (pos != std::string::npos) {
+                    return path.substr(0, pos + 1); 
+                }
+            }
+            return "./";
+        };
+
+        std::string cmd = 
+            get_exec_dir() + "../run_albat.sh " +
+            std::string(argv[2]) + " " + 
+            std::string(argv[3]) + " " +
+            std::string(argv[4]);
+        
+        return system(cmd.c_str());
+    }
     std::string code, str;
     char buf[10000];
     {

@@ -81,6 +81,26 @@ void Albat::library_check(std::string &str)
                 libMan.requestLibrary("Slice", 0);
             }
         }
+        fmt = StringUtils::find_Function(str, "popc()");
+        if(fmt.size() == 3) {
+            libMan.requestLibrary("popcount", 0);
+        }
+        fmt = StringUtils::find_Function(str, "popcl()");
+        if(fmt.size() == 3) {
+            libMan.requestLibrary("popcountl", 0);
+        }
+        fmt = StringUtils::find_Function(str, "bit_enumerate()");
+        if(fmt.size() == 3) {
+            libMan.requestLibrary("bit_enumerate", 0);
+        }
+        fmt = StringUtils::find_Function(str, "hasbit()");
+        if(fmt.size() == 3) {
+            libMan.requestLibrary("hasbit", 0);
+        }
+        fmt = StringUtils::find_Function(str, "bitlen()");
+        if(fmt.size() == 3) {
+            libMan.requestLibrary("bitlen", 0);
+        }
         break;
     }
 }

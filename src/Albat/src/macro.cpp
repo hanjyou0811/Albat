@@ -87,6 +87,31 @@ void Albat::processLoopMacro(std::string &macroName)
         addLocalVar(args[0], "auto");
     }
     else {
-        macroName = "Error!!!";
+        if(isRep){
+            macroName = "LoopMacroError!!!(-> rep(";
+            for(int i=0;i<args.size();i++){
+                macroName += args[i];
+                if(i != args.size() - 1) macroName += ", ";
+            }
+            macroName += "))";
+        }
+        else if(isRRep){
+            macroName = "LoopMacroError!!!(-> rrep(";
+            for(int i=0;i<args.size();i++){
+                macroName += args[i];
+                if(i != args.size() - 1) macroName += ", ";
+            }
+            macroName += "))";
+        }
+        else if(isFore){
+            macroName = "LoopsMacroError!!!(-> fore(";
+            for(int i=0;i<args.size();i++){
+                macroName += args[i];
+                if(i != args.size() - 1) macroName += ", ";
+            }
+            macroName += "))";
+        }
+        else
+            macroName = "LoopMacroError!!!(-> Unknown loop macro)";
     }
 }
