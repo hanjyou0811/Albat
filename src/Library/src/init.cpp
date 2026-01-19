@@ -635,6 +635,76 @@ void LibraryManager::initUtilityFunctions(){
         lib_positions[func_name] = pos;
         lib_dependencies[func_name] = deps;
     }
+    {
+        std::string func_name = "ltrim";
+        std::string func_code = "";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+        deps.push_back("ltrim_str");
+        deps.push_back("ltrim_vec");
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+    {
+        std::string func_name = "ltrim_str";
+        std::string func_code = "pair<string, int> ltrim(const string& s, char ch) {\n    int cnt = 0;\n    while (cnt < (int)s.size() && s[cnt] == ch) {\n        cnt++;\n    }\n    return {s.substr(cnt), cnt};\n}\n";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+    {
+        std::string func_name = "ltrim_vec";
+        std::string func_code = "template<typename T>\npair<vector<T>, int> ltrim(const vector<T>& v, T ch) {\n    int cnt = 0;\n    while (cnt < (int)v.size() && v[cnt] == ch) {\n        cnt++;\n    }\n    return {\n        vector<T>(v.begin() + cnt, v.end()),\n        cnt\n    };\n}\n";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+        
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+    {
+        std::string func_name = "rtrim";
+        std::string func_code = "";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+        deps.push_back("rtrim_str");
+        deps.push_back("rtrim_vec");
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+    
+    {
+        std::string func_name = "rtrim_str";
+        std::string func_code = "pair<string, int> rtrim(const string& s, char ch) {\n    int cnt = 0;\n    int last = (int)s.size() - 1;\n    while (last >= 0 && s[last] == ch) {\n        last--;\n        cnt++;\n    }\n    if (last < 0) return {\"\", cnt};\n    return {s.substr(0, last + 1), cnt};\n}\n";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+
+    {
+        std::string func_name = "rtrim_vec";
+        std::string func_code = "template<typename T>\npair<vector<T>, int> rtrim(const vector<T>& v, T ch) {\n    int cnt = 0;\n    int last = (int)v.size() - 1;\n    while (last >= 0 && v[last] == ch) {\n        last--;\n        cnt++;\n    }\n    if (last < 0) return {{}, cnt};\n    return {\n        vector<T>(v.begin(), v.begin() + last + 1),\n        cnt\n    };\n}\n";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
 }
 
 void LibraryManager::init() {
