@@ -101,6 +101,18 @@ void Albat::library_check(std::string &str)
         if(fmt.size() == 3) {
             libMan.requestLibrary("bitlen", 0);
         }
+	fmt = StringUtils::find_Function(str, "trim()");
+	if(fmt.size() == 3) {
+		libMan.requestLibrary("trim", 0);
+	}
+	fmt = StringUtils::find_Function(str, "ltrim()");
+	if(fmt.size() == 3) {
+	    libMan.requestLibrary("ltrim", 0);
+	}
+	fmt = StringUtils::find_Function(str, "rtrim()");
+	if(fmt.size() == 3) {
+	    libMan.requestLibrary("rtrim", 0);
+	}
         break;
     }
 }

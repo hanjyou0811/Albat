@@ -635,6 +635,46 @@ void LibraryManager::initUtilityFunctions(){
         lib_positions[func_name] = pos;
         lib_dependencies[func_name] = deps;
     }
+
+    {
+        std::string func_name = "trim";
+        std::string func_code = "";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+        deps.push_back("trim_str");
+        deps.push_back("trim_vec");
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+
+    {
+        std::string func_name = "trim_str";
+        std::string func_code = "pair<string,int> trim(const string& s, char ch) {\n    auto[ltrimed, lcnt] = ltrim(s, ch);\n    auto [rtrimed, rcnt] = rtrim(ltrimed, ch);\n    return {rtrimed, lcnt+rcnt};\n}\n";
+        std::string pos = HEAD;
+        std::vector<std::string> deps;
+        deps.push_back("ltrim_str");
+        deps.push_back("rtrim_str");	
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+
+    {
+        std::string func_name = "trim_vec";
+        std::string func_code = "template<typename T>\npair<vector<T>, int> trim(vector<T> s, T ch) {\n    auto[ltrimed, lcnt] = ltrim(s, ch);\n    auto [rtrimed, rcnt] = rtrim(ltrimed, ch);\n    return {rtrimed, lcnt+rcnt};\n}\n";	
+            std::string pos = HEAD;
+        std::vector<std::string> deps;
+        deps.push_back("ltrim_vec");
+        deps.push_back("rtrim_vec");
+        lib_names.push_back(func_name);
+        lib_Ident[func_name] = func_code;
+        lib_positions[func_name] = pos;
+        lib_dependencies[func_name] = deps;
+    }
+
     {
         std::string func_name = "ltrim";
         std::string func_code = "";
