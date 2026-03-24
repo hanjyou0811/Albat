@@ -3,13 +3,13 @@
 
 int Albat::processCodeStart(std::string &code, LINETYPES codeType, std::string &opt)
 {
-    StringUtils::ftrim(code);
+    trimLeadingInput(code);
     int endType = 0;
 
     if(codeType != LINETYPES::PROGRAM && code[0] == '{')
     {
         endType = 1;
-        code = code.substr(1);
+        consumePrefix(code, 1);
     }
 
     if(codeType == LINETYPES::PROGRAM)
@@ -31,13 +31,13 @@ int Albat::processDirectives(std::string &code)
     if (code.substr(0, 13) == "//interactive" && (isspace(code[13])|| code[13] == '\0'))
     {
         libMan.switch_Library("FastIO_flush", 1);
-        code = code.substr(13);
+        consumePrefix(code, 13);
         return 1;
     }
     if(code.substr(0,9) == "//atcoder" && (isspace(code[9]) || code[9] == '\0'))
     {
         // libMan.insertStill.insert("ACL");
-        code = code.substr(9);
+        consumePrefix(code, 9);
         return 1;
     }
     return 0;
@@ -64,14 +64,14 @@ std::string Albat::processTemplate_Modifiers(std::string &code)
                 }
             }
             result += code.substr(0, pos) + " ";
-            code = code.substr(pos);
-            StringUtils::ftrim(code);
+            consumePrefix(code, pos);
+            trimLeadingInput(code);
         }
         if(token == "inline")
         {
             result += "inline ";
-            code = code.substr(6);
-            StringUtils::ftrim(code);
+            consumePrefix(code, 6);
+            trimLeadingInput(code);
             continue;
         }
         break;
@@ -309,7 +309,8 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
                 }
             }
         }
-        code = code.substr(blockEndpos);
+        int blockHeaderSourceLine = currentInputLine;
+        consumePrefix(code, blockEndpos);
 
         // ライブラリチェック 
         library_check(blockName);
@@ -334,12 +335,12 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
         }
         // 子ノードの名前を設定しセットアップ
         childNode->name = prefixStr + blockName;
-        childNode->parse(code, opt, nestLevel + 1, LINETYPES::BLOCKS);
+        int blockBodySourceLine = currentInputLine;
+        childNode->parse(code, opt, nestLevel + 1, LINETYPES::BLOCKS, blockBodySourceLine, sourceFile);
+        currentInputLine = childNode->currentInputLine;
         
         // 子ノードをツリーに追加
-        nextindices.push_back(nextPtrs.size());
         nextPtrs.push_back(childNode);
-        lines.push_back(prefixStr + blockName);
         // ブロックタイプを設定
         LINETYPES blockCodeType;
         if (token.substr(0, 5) == "while") {
@@ -347,7 +348,7 @@ void Albat::processBlock(std::string &code, int blockType, const std::string &to
         } else {
             blockCodeType = LINETYPES::BLOCKS;
         }
-        lineTypes.push_back(blockCodeType);
+        addOutputLine(prefixStr + blockName, blockCodeType, nextPtrs.size() - 1, blockHeaderSourceLine);
 };
 
 void Albat::transferTemplateInfo(Albat *childNode, const std::string &tempStr)
@@ -409,8 +410,12 @@ void Albat::processSentence(std::string &code, int typeEndpos, int &returnFlag)
     
     // 文の終端を見つける
     int startPos = (typeEndpos != -1) ? typeEndpos : 0;
-    StringUtils::ftrim(code);
+    trimLeadingInput(code);
     if(code.empty()) return;
+    int statementSourceLine = -1;
+    if (currentInputLine > 0) {
+        statementSourceLine = currentInputLine + countNewlines(code.substr(0, startPos));
+    }
     int endPos = startPos;
     
     for (; endPos < code.size(); endPos++) {
@@ -459,9 +464,7 @@ void Albat::processSentence(std::string &code, int typeEndpos, int &returnFlag)
                     // 普通の文の処理
                     int ret = setup_Line(statement, "", typeStr, returnFlag);
                     if (ret) {
-                        nextindices.push_back(-1);
-                        lines.push_back(statement);
-                        lineTypes.push_back(LINETYPES::SENTENCE);
+                        addOutputLine(statement, LINETYPES::SENTENCE, -1, statementSourceLine);
                     }
                 }
                 
@@ -478,7 +481,7 @@ void Albat::processSentence(std::string &code, int typeEndpos, int &returnFlag)
         }
     }
     
-    code = code.substr(endPos);
+    consumePrefix(code, endPos);
 }
 
 void Albat::processTypeDeclaration(const std::string &typeStr, std::string &statement, int &returnFlg)
@@ -491,17 +494,13 @@ void Albat::processTypeDeclaration(const std::string &typeStr, std::string &stat
         if (declarationType == "input") {
             int ret = setup_Line(tmp, declarationType, def_typename, returnFlg);
             if (ret) {
-                nextindices.push_back(-1);
-                lines.push_back(tmp);
-                lineTypes.push_back(LINETYPES::INPUT);
+                addOutputLine(tmp, LINETYPES::INPUT, -1, currentInputLine);
             }
         }
         else {
             int is_lambda = setup_def(tmp);
             if(!is_lambda){
-                nextindices.push_back(-1);
-                lines.push_back(tmp);
-                lineTypes.push_back(LINETYPES::SENTENCE);
+                addOutputLine(tmp, LINETYPES::SENTENCE, -1, currentInputLine);
             }
         }
     }

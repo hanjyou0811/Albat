@@ -1,9 +1,12 @@
 #include "../albat.h"
 #include "../../Utils/stringutils.h"
 
-void Albat::parse(std::string &code, std::string opt, int nestlevel, LINETYPES codeType)
+void Albat::parse(std::string &code, std::string opt, int nestlevel, LINETYPES codeType,
+                  int startLine, const std::string &sourceFileArg)
 {
     init();
+    currentInputLine = startLine;
+    sourceFile = sourceFileArg.empty() ? (parent ? parent->sourceFile : ALBAT_SOURCE_FILE) : sourceFileArg;
     int endType = processCodeStart(code, codeType, opt);
     int extraSentence = !opt.empty() && endType == 0;
     int returnFlg = 0;
@@ -11,11 +14,11 @@ void Albat::parse(std::string &code, std::string opt, int nestlevel, LINETYPES c
 
     while(!code.empty())
     {
-        StringUtils::ftrim(code);
+        trimLeadingInput(code);
         if(code.empty()) break;
         if(codeType != LINETYPES::PROGRAM && code[0] == '{')
         {
-            code = code.substr(1);
+            consumePrefix(code, 1);
             endType = 1;
         }
         if(codeType == LINETYPES::PROGRAM)
@@ -66,8 +69,6 @@ void Albat::parse(std::string &code, std::string opt, int nestlevel, LINETYPES c
     }
     if (name == "int main()" && returnFlg == 0)
     {
-        lines.push_back("return 0;");
-        nextindices.push_back(-1);
-        lineTypes.push_back(LINETYPES::SENTENCE);
+        addOutputLine("return 0;", LINETYPES::SENTENCE);
     }
 }

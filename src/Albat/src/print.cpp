@@ -2,10 +2,27 @@
 #include "../../Utils/stringutils.h"
 #include <string>
 
+namespace {
+std::string escapeLineDirectiveFilename(const std::string &filename)
+{
+    std::string escaped;
+    escaped.reserve(filename.size());
+    for (char c : filename) {
+        if (c == '\\' || c == '"') {
+            escaped += '\\';
+        }
+        escaped += c;
+    }
+    return escaped;
+}
+}
+
 std::string Albat::print(int depth)
 {
     LibraryManager& libMan = LibraryManager::getInstance();
     std::string code = "";
+    int activeSourceLine = -1;
+    std::string activeSourceFile;
 
     auto emit = [&](const std::string& s) {
         code += s;
@@ -15,20 +32,44 @@ std::string Albat::print(int depth)
     {
         if (lineTypes[i] == LINETYPES::LIBRARY) {
             code += nextPtrs[nextindices[i]]->print(depth);
+            activeSourceLine = -1;
+            activeSourceFile.clear();
             continue;
+        }
+        if (sourceLines.size() > i && sourceLines[i] > 0 && !sourceFile.empty()) {
+            if (activeSourceLine != sourceLines[i] || activeSourceFile != sourceFile) {
+                emit("#line " + std::to_string(sourceLines[i]) + " \"" +
+                     escapeLineDirectiveFilename(sourceFile) + "\"\n");
+                activeSourceLine = sourceLines[i];
+                activeSourceFile = sourceFile;
+            }
+        } else if (activeSourceLine != -1 || !activeSourceFile.empty()) {
+            emit("#line 1 \"<generated>\"\n");
+            activeSourceLine = -1;
+            activeSourceFile.clear();
         }
         for (int j = 0; j < depth; j++)
             emit("    ");
         emit(lines[i]);
+        if (sourceLines.size() > i && sourceLines[i] > 0 && !sourceFile.empty()) {
+            activeSourceLine = sourceLines[i];
+        }
         if (lines[i] == "using namespace std;")
         {
             emit("\n");
+            if (activeSourceLine > 0 && !activeSourceFile.empty()) {
+                emit("#line 1 \"<generated>\"\n");
+            }
             emit(libMan.getLibraryIdentifier("prtype"));
             if (libMan.CanUseLibrary("FastIO") || libMan.CanUseLibrary("FastIO_flush")) {
                 if (libMan.CanUseLibrary("FastIO_flush"))
                     emit(libMan.getLibraryIdentifier("FastIO_flush"));
                 else
                     emit(libMan.getLibraryIdentifier("FastIO"));
+            }
+            if (activeSourceLine > 0 && !activeSourceFile.empty()) {
+                emit("#line " + std::to_string(activeSourceLine + 1) + " \"" +
+                     escapeLineDirectiveFilename(activeSourceFile) + "\"\n");
             }
         }
         if (lineTypes[i] == LINETYPES::BLOCKW &&
@@ -41,10 +82,18 @@ std::string Albat::print(int depth)
             emit("{\n");
         else
             emit("\n");
+        if (activeSourceLine > 0) {
+            activeSourceLine++;
+        }
         if (nextindices[i] >= 0)
             emit(nextPtrs[nextindices[i]]->print(depth + 1));
         if (lineTypes[i] == LINETYPES::BLOCKS || lineTypes[i] == LINETYPES::BLOCKW)
         {
+            if (activeSourceLine != -1 || !activeSourceFile.empty()) {
+                emit("#line 1 \"<generated>\"\n");
+                activeSourceLine = -1;
+                activeSourceFile.clear();
+            }
             for (int j = 0; j < depth; j++)
                 emit("    ");
             emit("}\n");

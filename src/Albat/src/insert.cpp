@@ -13,17 +13,15 @@ void Albat::insert(std::string &str, int pos){
       Albat *child = new Albat;
       child->mergeParent(this);
       if(pure){
-        child->parse(str,"", 0, LINETYPES::BLOCKS);
+        child->parse(str,"", 0, LINETYPES::BLOCKS, -1, sourceFile);
       } else {
-        child->parse(str,"", 0, LINETYPES::LIBRARY);
+        child->parse(str,"", 0, LINETYPES::LIBRARY, -1, sourceFile);
       }
-      nextindices.insert(nextindices.begin()+pos, nextPtrs.size());
       nextPtrs.push_back(child);
-      lines.insert(lines.begin()+pos, (std::string)"");
       if(pure){
-        lineTypes.insert(lineTypes.begin()+pos, LINETYPES::BLOCKS);
+        insertOutputLine(pos, "", LINETYPES::BLOCKS, nextPtrs.size() - 1, -1);
       } else {
-        lineTypes.insert(lineTypes.begin()+pos, LINETYPES::LIBRARY);
+        insertOutputLine(pos, "", LINETYPES::LIBRARY, nextPtrs.size() - 1, -1);
       }
       pos++;
     }

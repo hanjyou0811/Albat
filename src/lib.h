@@ -6,5 +6,6 @@
 #include <unistd.h>
 #include <limits.h>
 #include <cstdlib>
+#include <sys/wait.h>
 
 #endif // lib.h

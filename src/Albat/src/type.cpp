@@ -25,7 +25,7 @@ int Albat::checkEndType(std::string &code, int &endType, int &extraSentence, int
 
     if(code[0] == '}' && endType == 1)
     {
-        code = code.substr(1);
+        consumePrefix(code, 1);
         return 1;
     }
     return 0;

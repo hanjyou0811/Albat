@@ -137,10 +137,11 @@ int Albat::isValidPreprocessor(std::string &code)
             }else{
                 tmp = "#" + tmp;
             }
+            if (currentInputLine > 0) {
+                currentInputLine += countNewlines(preprocess_line.substr(0, i));
+            }
             code = preprocess_line.substr(i);
-            nextindices.push_back(-1);
-            lines.push_back(tmp);
-            lineTypes.push_back(pp.type);
+            addOutputLine(tmp, pp.type, -1, currentInputLine);
             
             return (1);
         }
@@ -159,7 +160,7 @@ int Albat::isValidComment(std::string &code)
                 break;
             }
         }
-        code = code.substr(i);
+        consumePrefix(code, i);
         return (1);
     }
     if(code.substr(0,2) == "/*")
@@ -172,7 +173,7 @@ int Albat::isValidComment(std::string &code)
                 break;
             }
         }
-        code = code.substr(i);
+        consumePrefix(code, i);
         return (1);
     }
     return (0);

@@ -18,6 +18,7 @@ namespace fs = std::filesystem;
 //debug
 #include <iostream>
 extern std::string MAIN_BLOCK;
+extern std::string ALBAT_SOURCE_FILE;
 
 enum class LINETYPES{
     PROGRAM,
@@ -47,7 +48,10 @@ class Albat {
         std::vector<std::string> lines, PrefixStrs;
         std::vector<LINETYPES> lineTypes;
         std::vector<int> nextindices;
+        std::vector<int> sourceLines;
         std::vector<Albat *> nextPtrs;
+        std::string sourceFile;
+        int currentInputLine = 1;
 
         std::set<std::string> typenames, STLtypenames, tmptypenames, spacenames;
         // std::map<std::string, std::string> 
@@ -98,11 +102,17 @@ class Albat {
         std::string update_operator_equal(std::string &code, const std::string &operator_symbol);
 
         //parse.cpp
-        void parse(std::string &code, std::string opt, int nestlevel, LINETYPES codeType);
+        void parse(std::string &code, std::string opt, int nestlevel, LINETYPES codeType,
+                   int startLine = 1, const std::string &sourceFile = "");
         std::string print(int depth);
         void debug(int depth);
         //insert.cpp
         void insert(std::string &str, int pos);
+        void addOutputLine(const std::string &line, LINETYPES type, int nextIndex = -1, int sourceLine = -1);
+        void insertOutputLine(int pos, const std::string &line, LINETYPES type, int nextIndex = -1, int sourceLine = -1);
+        void consumePrefix(std::string &code, int len);
+        void trimLeadingInput(std::string &code);
+        int countNewlines(const std::string &text) const;
     private:
         //library.cpp
         void library_check(std::string &str);

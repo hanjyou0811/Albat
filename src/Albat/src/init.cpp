@@ -1,4 +1,5 @@
 #include "../albat.h"
+#include <cctype>
 
 Albat::Albat() {
     init();
@@ -34,4 +35,55 @@ void Albat::init()
             "SegTree_pt_min", "SegTree_pt_sum", "WeightedUnionFind"
             };
     spacenames = {"std::"};
+    currentInputLine = 1;
+}
+
+int Albat::countNewlines(const std::string &text) const
+{
+    int count = 0;
+    for (char c : text) {
+        if (c == '\n') {
+            count++;
+        }
+    }
+    return count;
+}
+
+void Albat::consumePrefix(std::string &code, int len)
+{
+    if (len <= 0) {
+        return;
+    }
+    if (len > static_cast<int>(code.size())) {
+        len = static_cast<int>(code.size());
+    }
+    if (currentInputLine > 0) {
+        currentInputLine += countNewlines(code.substr(0, len));
+    }
+    code = code.substr(len);
+}
+
+void Albat::trimLeadingInput(std::string &code)
+{
+    int pos = 0;
+    while (pos < static_cast<int>(code.size()) && isspace(static_cast<unsigned char>(code[pos]))) {
+        pos++;
+    }
+    consumePrefix(code, pos);
+}
+
+void Albat::addOutputLine(const std::string &line, LINETYPES type, int nextIndex, int sourceLine)
+{
+    nextindices.push_back(nextIndex);
+    lines.push_back(line);
+    lineTypes.push_back(type);
+    sourceLines.push_back(sourceLine);
+}
+
+void Albat::insertOutputLine(int pos, const std::string &line, LINETYPES type, int nextIndex, int sourceLine)
+{
+    nextindices.insert(nextindices.begin() + pos, nextIndex);
+    lines.insert(lines.begin() + pos, line);
+    lineTypes.insert(lineTypes.begin() + pos, type);
+    sourceLines.insert(sourceLines.begin() + pos, sourceLine);
 }

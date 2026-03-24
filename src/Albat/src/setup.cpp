@@ -136,9 +136,7 @@ int Albat::setup_Line(std::string &str, std::string tp, std::string &typeStr, in
           arg += ", " + sep;
         }
         arg += ");";
-        nextindices.push_back(-1);
-        lines.push_back(arg);
-        lineTypes.push_back(LINETYPES::SENTENCE);
+        addOutputLine(arg, LINETYPES::SENTENCE, -1, currentInputLine);
       }
     }
     if(type){
@@ -263,9 +261,7 @@ int Albat::setup_def(std::string &str)
           int block_size = StringUtils::size_block(tmpstr);
           tmpstr = str.substr(0, sj);
 
-          lines.push_back(tmpstr);
-          lineTypes.push_back(LINETYPES::SENTENCE);
-          nextindices.push_back(-1);
+          addOutputLine(tmpstr, LINETYPES::SENTENCE, -1, currentInputLine);
           tmpstr = str.substr(sj, block_size);
           tmpstr += ";";
           is_lambda = 1;
