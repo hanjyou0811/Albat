@@ -1,0 +1,51 @@
+[
+  {
+    "id": "io",
+    "path": "sample/io.al",
+    "stdin": "3 4 5\n",
+    "stdout": "12\n60\n",
+    "classification": "normal"
+  },
+  {
+    "id": "op",
+    "path": "sample/op.al",
+    "stdin": "5 3\n",
+    "stdout": "a ** b = 125\n⌊ a / b ⌋ = 2\nc % a = 3\n",
+    "classification": "normal"
+  },
+  {
+    "id": "rep",
+    "path": "sample/rep.al",
+    "stdin": "10\n",
+    "stdout": "1\n3\n6\n10\n15\n21\n28\n36\n45\n55\n",
+    "classification": "normal"
+  },
+  {
+    "id": "sample1",
+    "path": "sample/sample1.al",
+    "stdin": "3 5 1 2 3 1 2 4\n",
+    "stdout": "Yes\n",
+    "classification": "normal"
+  },
+  {
+    "id": "sample2",
+    "path": "sample/sample2.al",
+    "stdin": "3 3 11 1 3 9 1 2 4 2 4 0 1 2 2 1 3 1 2\n",
+    "stdout": "Yes\nNo\nYes\n",
+    "classification": "normal"
+  },
+  {
+    "id": "tuple",
+    "path": "sample/tuple.al",
+    "stdin": "",
+    "stdout": "a : 1, b : 2, c : 3\na : 2, b : 3, c : 1\n",
+    "classification": "normal"
+  },
+  {
+    "id": "input_increment_legacy",
+    "source": "int@a++;\n$$(a);\n",
+    "stdin": "5\n",
+    "stdout": "4\n",
+    "classification": "known-bug"
+  }
+]

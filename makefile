@@ -12,7 +12,7 @@ WASM_FLAGS = -O3 \
 
 TARGET = albat
 BIN_DIR = bin
-SRC_DIR = src
+SRC_DIR = compat/cpp/src
 
 BUILD_DIR_NATIVE = build/native
 BUILD_DIR_WASM   = build/wasm
@@ -74,3 +74,6 @@ clean:
 	rm -rf build $(BIN_DIR)
 
 .PHONY: all clean native wasm
+
+reference: native
+.PHONY: reference
