@@ -179,7 +179,8 @@ namespace StringUtils{
         StringUtils::trim(fmt[0]);
         std::string s, pre_str;
         int fmt0_idx = fmt[0].size() - 1;
-        while((isalnum(fmt[0][fmt0_idx]) || fmt[0][fmt0_idx] == '_') && fmt0_idx >= 0){
+        while(fmt0_idx >= 0 &&
+              (isalnum(static_cast<unsigned char>(fmt[0][fmt0_idx])) || fmt[0][fmt0_idx] == '_')){
             fmt0_idx--;
         }
         s = fmt[0].substr(fmt0_idx+1);
