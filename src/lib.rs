@@ -65,12 +65,38 @@ pub fn transpile(
                 node.text = "do".into();
                 node.suffix = format!(" while(next_permutation({args}));");
             }
-            if node.children.is_none() && node.text.contains('[') && node.text.contains('{') {
-                let mask = scan::code_mask(&node.text)?;
+            if node.children.is_none() && node.text.contains('[') {
                 let mut offset = 0;
-                while let Some(open) = (offset..node.text.len())
-                    .find(|&i| mask.get(i) == Some(&true) && node.text.as_bytes()[i] == b'{')
-                {
+                loop {
+                    let mask = scan::code_mask(&node.text)?;
+                    let bytes = node.text.as_bytes();
+                    let capture = (offset..node.text.len()).find(|&i| {
+                        if !mask[i] || bytes[i] != b'[' {
+                            return false;
+                        }
+                        let previous = node.text[..i].trim_end().as_bytes().last().copied();
+                        previous.is_none()
+                            || previous
+                                .is_some_and(|b| matches!(b, b'=' | b'(' | b',' | b'{' | b';'))
+                    });
+                    let Some(capture) = capture else {
+                        break;
+                    };
+                    let capture_end = scan::matching_close(&node.text, capture)?;
+                    let mut open = capture_end + 1;
+                    while open < bytes.len() && bytes[open].is_ascii_whitespace() {
+                        open += 1;
+                    }
+                    if bytes.get(open) == Some(&b'(') {
+                        open = scan::matching_close(&node.text, open)? + 1;
+                    }
+                    while open < bytes.len() && bytes[open] != b'{' && bytes[open] != b';' {
+                        open += 1;
+                    }
+                    if bytes.get(open) != Some(&b'{') {
+                        offset = capture_end + 1;
+                        continue;
+                    }
                     let close = scan::matching_close(&node.text, open)?;
                     let mut body = parser::parse_fragment(
                         &node.text[open + 1..close],
@@ -78,6 +104,20 @@ pub fn transpile(
                         loader,
                         libs,
                     )?;
+                    fn adjust_lines(nodes: &mut [ir::Node], offset: usize) {
+                        for node in nodes {
+                            node.line += offset;
+                            if let Some(children) = &mut node.children {
+                                adjust_lines(children, offset);
+                            }
+                        }
+                    }
+                    let line_offset = node.line.saturating_sub(1)
+                        + node.text[..open + 1]
+                            .bytes()
+                            .filter(|&b| b == b'\n')
+                            .count();
+                    adjust_lines(&mut body, line_offset);
                     rewrite_nodes(&mut body, scope, libs, loader)?;
                     let replacement = format!("{{\n{}\n}}", emit::nodes(&body, libs)?);
                     node.text.replace_range(open..close + 1, &replacement);
@@ -85,7 +125,11 @@ pub fn transpile(
                 }
             }
             if !node.text.starts_with('#') {
-                node.text = transform::rewrite(&node.text, scope, libs)?;
+                node.text = transform::rewrite(&node.text, scope, libs).map_err(|mut error| {
+                    error.source = node.source.clone();
+                    error.line += node.line.saturating_sub(1);
+                    error
+                })?;
             }
             if let Some(children) = &mut node.children {
                 rewrite_nodes(children, scope, libs, loader)?;
@@ -98,3 +142,7 @@ pub fn transpile(
     rewrite_nodes(&mut program.nodes, &mut scope, &mut libraries, loader)?;
     emit::emit(&program, &libraries)
 }
+#[cfg(not(target_arch = "wasm32"))]
+pub mod cli;
+#[cfg(feature = "wasm-bindgen")]
+pub mod wasm;

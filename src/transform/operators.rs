@@ -63,6 +63,15 @@ fn right_end(s: &str, start: usize) -> Result<usize, Diagnostic> {
     }
 }
 pub fn rewrite(source: &str, libs: &mut LibraryManager) -> Result<String, Diagnostic> {
+    let mut scope = crate::scope::Scope::default();
+    scope.reserve_source(source);
+    rewrite_typed(source, libs, &scope)
+}
+pub fn rewrite_typed(
+    source: &str,
+    libs: &mut LibraryManager,
+    scope: &crate::scope::Scope,
+) -> Result<String, Diagnostic> {
     let mut s = source.to_owned();
     for (symbol, function) in [
         ("**=", "_pow"),
@@ -88,10 +97,7 @@ pub fn rewrite(source: &str, libs: &mut LibraryManager) -> Result<String, Diagno
                 continue;
             }
             let operand = s[left..pos].trim();
-            if matches!(
-                operand,
-                "int" | "long" | "char" | "float" | "double" | "void" | "auto"
-            ) {
+            if scope.is_type(operand) {
                 search = pos + symbol.len();
                 continue;
             }

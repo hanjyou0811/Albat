@@ -85,3 +85,56 @@ fn do_while_and_lambda_body() {
         "3\n"
     );
 }
+#[test]
+fn inserted_libraries_have_forward_declarations() {
+    assert_eq!(
+        run_cpp(
+            &translate("auto p=trim(string(\"xxabcxx\"),'x'); cout<<p.first;"),
+            ""
+        ),
+        "abc"
+    );
+    assert_eq!(
+        run_cpp(
+            &translate("vi v={0,0,1,0}; auto p=trim(v,0); cout<<p.first[0];"),
+            ""
+        ),
+        "1"
+    );
+}
+#[test]
+fn array_initializers_are_not_lambda_bodies() {
+    assert_eq!(run_cpp(&translate("int a[2]={1,2}; cout<<a[1];"), ""), "2");
+}
+#[test]
+fn namespace_and_template_struct() {
+    let source="namespace n {int twice(int x){return 2*x;}} template<class T> struct Box { T x; }; {Box<int> b{3}; cout<<n::twice(b.x);}";
+    assert_eq!(run_cpp(&translate(source), ""), "6");
+}
+#[test]
+fn pointer_declarations_are_not_power_expressions() {
+    let source = "struct Box {int x;}; {Box b{3}; Box *p=&b; Box **q=&p; cout<<(**q).x;}";
+    assert_eq!(run_cpp(&translate(source), ""), "3");
+}
+#[test]
+fn library_names_used_as_variables_do_not_request_functions() {
+    let cpp = translate("int trim=1; cout<<trim;");
+    assert!(!cpp.contains("ltrim("));
+    assert_eq!(run_cpp(&cpp, ""), "1");
+}
+#[test]
+fn template_class_methods_are_translated() {
+    let source =
+        "template<class T> struct Box { T x; void show(){ $$(x); } }; { Box<int> b{3}; b.show(); }";
+    assert_eq!(run_cpp(&translate(source), ""), "3\n");
+}
+#[test]
+fn diagnostics_retain_the_configured_source_name() {
+    let options = albat::Options {
+        source_name: "broken.al".into(),
+        ..Default::default()
+    };
+    let error = albat::transpile("\nif(1 {", &options, &albat::NoSources).unwrap_err();
+    assert_eq!(error.source, "broken.al");
+    assert_eq!(error.line, 2);
+}

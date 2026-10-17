@@ -19,7 +19,12 @@ pub fn parse(
         libraries,
         includes: vec![options.source_name.clone()],
     };
-    let mut nodes = parser.nodes(false)?;
+    let mut nodes = parser.nodes(false).map_err(|mut error| {
+        if error.source == "<stdin>" {
+            error.source = options.source_name.clone();
+        }
+        error
+    })?;
     let has_main = nodes.iter().any(|n| {
         n.children.is_some()
             && n.suffix != "@include"
@@ -151,7 +156,12 @@ impl Parser<'_> {
                         includes: chain,
                     };
                     node.text = String::new();
-                    node.children = Some(child.nodes(false)?);
+                    node.children = Some(child.nodes(false).map_err(|mut error| {
+                        if error.source == "<stdin>" {
+                            error.source = name.into();
+                        }
+                        error
+                    })?);
                     // An include is a transparent collection, not a C++ scope.
                     node.suffix = "@include".into();
                 }
@@ -229,7 +239,10 @@ impl Parser<'_> {
                 }
                 b'{' => {
                     let head = self.source[start..i].trim();
-                    let structural = matches!(word, "struct" | "class" | "namespace" | "enum");
+                    let structural = matches!(
+                        leading_keyword(head),
+                        "struct" | "class" | "namespace" | "enum"
+                    );
                     let function = head.contains(')')
                         && (crate::scan::split_top_level(head, '=')?.len() == 1
                             || head.contains("operator"));
@@ -281,4 +294,36 @@ pub fn parse_fragment(
         includes: vec![file.into()],
     }
     .nodes(false)
+}
+
+fn leading_keyword(mut source: &str) -> &str {
+    source = source.trim_start();
+    while let Some(rest) = source.strip_prefix("template") {
+        let rest = rest.trim_start();
+        if !rest.starts_with('<') {
+            break;
+        }
+        let mut depth = 0;
+        let mut end = None;
+        for (i, ch) in rest.char_indices() {
+            if ch == '<' {
+                depth += 1;
+            }
+            if ch == '>' {
+                depth -= 1;
+                if depth == 0 {
+                    end = Some(i + 1);
+                    break;
+                }
+            }
+        }
+        let Some(end) = end else {
+            break;
+        };
+        source = rest[end..].trim_start();
+    }
+    source
+        .split(|c: char| !(c.is_alphanumeric() || c == '_'))
+        .next()
+        .unwrap_or("")
 }

@@ -15,7 +15,7 @@ pub fn rewrite(
 ) -> Result<String, Diagnostic> {
     let mut s = declarations::grouped(&aliases(&macros::rewrite(statement)?)?)?;
     s = slices(&s, libraries)?;
-    s = operators::rewrite(&s, libraries)?;
+    s = operators::rewrite_typed(&s, libraries, scope)?;
     if let Some(tuple) = declarations::tuple(&s, scope)? {
         s = tuple;
     }
@@ -28,6 +28,7 @@ pub fn rewrite(
 pub fn detect_libraries(s: &str, libraries: &mut LibraryManager) -> Result<(), Diagnostic> {
     let mask = code_mask(s)?;
     let mut tokens = Vec::new();
+    let mut calls = std::collections::BTreeSet::new();
     let mut i = 0;
     while i < s.len() {
         if mask[i] && is_identifier_byte(s.as_bytes()[i]) {
@@ -35,21 +36,56 @@ pub fn detect_libraries(s: &str, libraries: &mut LibraryManager) -> Result<(), D
             while i < s.len() && mask[i] && is_identifier_byte(s.as_bytes()[i]) {
                 i += 1;
             }
-            tokens.push(&s[start..i]);
+            let token = &s[start..i];
+            tokens.push(token);
+            if s[i..].trim_start().starts_with('(') {
+                calls.insert(token);
+            }
         } else {
             i += 1;
         }
     }
+    let typed = [
+        "UnionFind",
+        "WeightedUnionFind",
+        "_SegTree",
+        "SegTree_pt_max",
+        "SegTree_pt_min",
+        "SegTree_pt_sum",
+        "Fenwick_tree",
+        "mint",
+        "modint",
+        "mod_int",
+        "CycleLib",
+        "MexSet",
+    ];
+    let functions = [
+        ("biseek", "biseek"),
+        ("chmax", "chmax"),
+        ("chmin", "chmin"),
+        ("runLengthEncoding", "runLengthEncoding"),
+        ("yesno", "yesno"),
+        ("GCD_L", "gcd"),
+        ("lcm", "lcm"),
+        ("inversionNumber", "inversionNumber"),
+        ("divNum", "divnum"),
+        ("makePrimes", "makePrimes"),
+        ("popc", "popcount"),
+        ("popcl", "popcountl"),
+        ("bit_enumerate", "bit_enumerate"),
+        ("hasbit", "hasbit"),
+        ("bitlen", "bitlen"),
+        ("trim", "trim"),
+        ("ltrim", "ltrim"),
+        ("rtrim", "rtrim"),
+    ];
     for token in &tokens {
-        let name = match *token {
-            "GCD_L" => "gcd",
-            "divNum" => "divnum",
-            "popc" => "popcount",
-            "popcl" => "popcountl",
-            "inversionNumber" => "inversionNumber",
-            _ => token,
-        };
-        if crate::library::CATALOG.iter().any(|e| e.name == name) {
+        if typed.contains(token) {
+            libraries.request(token, false);
+        }
+    }
+    for (call, name) in functions {
+        if calls.contains(call) {
             libraries.request(name, false);
         }
     }

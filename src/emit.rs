@@ -44,6 +44,38 @@ pub fn emit(program: &Program, libs: &LibraryManager) -> Result<String, Diagnost
         &transform::aliases(&transform::macros::rewrite(&libs.emit(Position::Head)?)?)?,
         &mut scratch,
     )?;
+    if let Some(pos) = out.find("using namespace std;") {
+        let mut declarations = String::new();
+        for entry in crate::library::CATALOG {
+            if entry.body.is_empty() || !libs.selected_names().contains(entry.name) {
+                continue;
+            }
+            // Class definitions and their free operators must follow the class declaration.
+            if entry.body.contains("struct ") || entry.body.contains("class FastIO") {
+                continue;
+            }
+            let body = transform::operators::rewrite(
+                &transform::macros::rewrite(entry.body)?,
+                &mut scratch,
+            )?;
+            let parsed = crate::parser::parse_fragment(
+                &body,
+                "<generated>",
+                &crate::NoSources,
+                &mut scratch,
+            )?;
+            for node in parsed {
+                if node.function && node.children.is_some() {
+                    declarations.push_str(&prototype(&node.text)?);
+                    declarations.push_str(";\n");
+                }
+            }
+        }
+        out.insert_str(
+            pos + "using namespace std;".len(),
+            &format!("\n{declarations}"),
+        );
+    }
     out.push('\n');
     // Stream helpers are parsed from frozen Albat-compatible assets above.
     if libs.is_enabled("FastIO") || libs.is_enabled("FastIO_flush") {

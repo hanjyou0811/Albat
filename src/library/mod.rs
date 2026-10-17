@@ -86,7 +86,7 @@ impl LibraryManager {
             .map(|e| e.body)
             .unwrap_or("")
     }
-    pub fn emit(&self, position: Position) -> Result<String, Diagnostic> {
+    pub fn selected_names(&self) -> BTreeSet<String> {
         let mut needed = self.requested.clone();
         loop {
             let before = needed.len();
@@ -112,6 +112,11 @@ impl LibraryManager {
                 break;
             }
         }
+        needed.retain(|name| !self.excluded.contains(name));
+        needed
+    }
+    pub fn emit(&self, position: Position) -> Result<String, Diagnostic> {
+        let needed = self.selected_names();
         // Unknown legacy requests are intentionally inert (e.g. the disabled sum library).
         let mut out = String::new();
         for e in CATALOG {
