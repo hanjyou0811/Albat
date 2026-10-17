@@ -74,3 +74,25 @@ Albatの入力言語と生成C++の動作を保ちながら、変換器本体、
 専用ブランチ `refactor/rust-port` で作業する。元の作業ディレクトリにあるサンプルのバイナリ・生成C++はユーザーの既存変更として保持し、移植のコミットに混ぜない。テスト生成物は一時領域へ出す。
 
 この設計書の承認後に、依存順序・具体的なファイル・各段階の検証を含む実装計画を作成する。その計画の確認と実行方法の選択を経て実装へ進む。
+
+## 棚卸しで特に確認すべき互換性項目
+
+以下は旧ソースから確認した検証対象であり、実動作の検証済み一覧ではない。
+
+| 領域 | 実装上の対象 | 検証する振る舞い |
+| --- | --- | --- |
+| ループ | `rep/REP/rrep/RREP`、`fore`、`do_perm` | 引数数・増分・降順・参照変数・単文/ブロックの違い |
+| 構造 | if/else-if/else、for/while/do、struct/class/namespace | ネスト、型登録、関数宣言と呼び出しの区別 |
+| マクロ | all、len、Count、_upper_bound、_lower_bound | リテラル内を変更しないこと、入れ子引数 |
+| コメント指示 | `//interactive`、`//atcoder` | 通常コメントとの境界、実際に有効なライブラリ選択 |
+| 数値 | gcd/lcm、べき乗、切上げ除算、非負剰余、素数・約数、ビット演算 | 呼び出し名と登録名の対応、依存関係、入力の定義域 |
+| データ構造 | UnionFind、WeightedUnionFind、SegTree各種、Fenwick_tree、MexSet | 必要なC++定義の挿入と利用プログラムの動作 |
+| 剰余型 | mint/modint/mod_int と各初期化コード | 定数定義・初期化位置・依存順序 |
+| IO | FastIO/FastIO_flush、istream/ostreamのpair/vector/set/map等 | 混在時の排他、interactive時の出力、選択順序 |
+| ユーティリティ | chmax/chmin、biseek、runLengthEncoding、CycleLib、yesno、inversionnumber | 認識名と生成定義の一致、実行例 |
+| コレクション | Slice、trim/ltrim/rtrim と文字列/vector版 | オーバーロード、依存選択、境界値 |
+| 設定 | PRAGMA、STDCPP、NAMESPACE_STD、NAMESPACE_ACL、DEFINE_INT_LL | 既定値と変更可能な設定の対応、挿入位置 |
+
+登録情報に存在しても、呼び出し検出と結び付かず旧版で使えない機能は「正常互換」のケースと区別する。例として `inversionNumber` の検出と `inversionnumber` の登録の表記差、`//atcoder` 内の無効化されたライブラリ要求がある。これらを移植時に無断で新たな言語仕様として有効化しない。
+
+既存の `sample/io` などはテスト入力ではなく追跡対象の実行ファイルであり、サンプルテストが上書きする。Rust移植の検証では入力データと期待出力をテスト側で管理し、生成物をソースツリーに書き込まない。
