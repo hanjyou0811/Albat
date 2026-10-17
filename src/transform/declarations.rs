@@ -37,24 +37,12 @@ pub fn tuple(s: &str, scope: &mut Scope) -> Result<Option<String>, Diagnostic> {
     Ok(Some(out))
 }
 
-pub fn grouped(s: &str) -> Result<String, Diagnostic> {
+pub fn grouped(s: &str, scope: &Scope) -> Result<String, Diagnostic> {
     let Some(open) = s.find('(') else {
         return Ok(s.into());
     };
     let tp = s[..open].trim();
-    if ![
-        "int",
-        "long long",
-        "double",
-        "float",
-        "char",
-        "string",
-        "auto",
-        "unsigned",
-        "bool",
-    ]
-    .contains(&tp)
-    {
+    if !scope.is_type(tp) {
         return Ok(s.into());
     }
     let close = matching_close(s, open)?;

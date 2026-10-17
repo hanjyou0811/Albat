@@ -88,3 +88,47 @@ fn compile_failure_is_nonzero() {
     let out = binary().arg("run").arg(file).output().unwrap();
     assert!(!out.status.success());
 }
+#[test]
+fn relative_include_and_missing_compiler() {
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::write(dir.path().join("helper.al"), "int helper(){return 8;}").unwrap();
+    std::fs::write(
+        dir.path().join("main.al"),
+        "#include helper.al\n{cout<<helper();}",
+    )
+    .unwrap();
+    let out = binary()
+        .current_dir(dir.path())
+        .args(["run", "main.al"])
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert_eq!(out.stdout, b"8");
+    let out = binary()
+        .current_dir(dir.path())
+        .env("PATH", dir.path())
+        .args(["run", "main.al"])
+        .output()
+        .unwrap();
+    assert!(!out.status.success());
+    assert!(String::from_utf8_lossy(&out.stderr).contains("cannot execute g++"));
+}
+#[cfg(target_os = "linux")]
+#[test]
+fn redirected_stdin_retains_source_filename() {
+    let dir = tempfile::tempdir().unwrap();
+    let file = dir.path().join("input.al");
+    std::fs::write(&file, "cout<<1;").unwrap();
+    let out = binary()
+        .stdin(std::fs::File::open(&file).unwrap())
+        .output()
+        .unwrap();
+    assert!(out.status.success());
+    assert!(String::from_utf8(out.stdout)
+        .unwrap()
+        .contains(&format!("#line 1 \"{}\"", file.display())));
+}

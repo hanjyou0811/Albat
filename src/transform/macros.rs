@@ -75,12 +75,16 @@ pub fn rewrite(source: &str) -> Result<String, Diagnostic> {
                     }
                     "_upper_bound" | "_lower_bound" => {
                         let function = &name[1..];
+                        // all() expands into two iterator arguments before the
+                        // legacy bound macro chooses its overload.
+                        let expanded = a.join(",");
+                        let a = split_top_level(&expanded, ',')?;
                         match a.len() {
                             1 => format!("{}({})", function, a[0]),
                             2 => format!("{}.{}({})", a[0], function, a[1]),
                             3 => format!(
                                 "{}.{}({})",
-                                a[0].split('.').next().unwrap_or(&a[0]),
+                                a[0].split('.').next().unwrap_or(a[0]),
                                 function,
                                 a[2]
                             ),

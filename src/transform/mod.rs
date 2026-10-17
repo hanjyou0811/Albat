@@ -13,7 +13,7 @@ pub fn rewrite(
     scope: &mut Scope,
     libraries: &mut LibraryManager,
 ) -> Result<String, Diagnostic> {
-    let mut s = declarations::grouped(&aliases(&macros::rewrite(statement)?)?)?;
+    let mut s = declarations::grouped(&aliases(&macros::rewrite(statement)?)?, scope)?;
     s = slices(&s, libraries)?;
     s = operators::rewrite_typed(&s, libraries, scope)?;
     if let Some(tuple) = declarations::tuple(&s, scope)? {

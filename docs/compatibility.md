@@ -22,9 +22,9 @@
 | rep/REP/rrep/RREP/fore/do_perm | tests/transforms.rs、loop_forms/uppercase_loops/permutations | 実行検証。do_permは旧生成器エラーを区別 |
 | all/len/Count/_upper_bound/_lower_bound | collection_macros/bound、tests/transforms.rs | 実行検証 |
 | template/class/struct/namespace/lambda | tests/syntax.rs | 実行検証 |
-| プリプロセッサ/include | tests/syntax.rs、ACL手動比較 | include・循環・外部ヘッダーを検証、指示行は保持 |
+| プリプロセッサ/include | tests/syntax.rs、ACL手動比較 | include・循環・外部ヘッダー・条件付き指示行を検証 |
 | 入力size/増減/!、出力sep | tests/transforms.rs、input_increment_legacy/input_skip/output_separator | 実行検証 |
-| 独自複合代入/スライス | tests/transforms.rs、op/compound_ops/slice | 実行検証 |
+| 独自複合代入/スライス | tests/transforms.rs、op/compound_ops/operator_precedence/operator_operands/slice | 実行検証 |
 | run/export/exec/#line/終了コード | tests/cli.rs、tests/syntax.rs | 実行検証 |
 | WASM/連続変換 | tools/test_web.mjs | 実Chromiumでネイティブ出力と比較 |
 
@@ -122,11 +122,24 @@
 
 ## 再現コマンドと補足
 
-- `make test`: Rustの単体・結合テストと49ケースのコンパイル/実行/既知コンパイルエラー検証。
-- `make test-reference`: 全カタログ照合と同じ49ケースを旧変換器にも適用。現在の分類は {'normal': 40, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
+- `make test`: Rustの単体・結合テストと58ケースのコンパイル/実行/既知コンパイルエラー検証。
+- `make test-reference`: 全カタログ照合と同じ58ケースを旧変換器にも適用。現在の分類は {'normal': 49, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
 - `make test-web`: 実ブラウザで全ケースの生成C++をネイティブ版と完全一致比較し、不正入力後の復帰と状態の分離を検証する。C++をブラウザ内で実行するテストではない。
 - `python3 tools/test_build.py`: Makeビルド、CLIヘルプ、6サンプル、sampleディレクトリの内容・パーミッション不変を検証。
 - ACLは公式ac-libraryを用意し、`CPLUS_INCLUDE_PATH` を指定して `#include <atcoder/all>` とdsuの利用を両版で検証した。外部ヘッダーは同梱しない。
 - C++コンパイラを失敗する代替プログラムに置き換えたクリーンCargoビルドと変換の成功を確認。旧版は通常のRustビルド・実行には不要。
 
 生成C++の整形、一時変数名、元ソースを末尾へ付けるコメントは互換性の対象外。元ソースに `*/` が含まれると壊れる旧CLIのコメント付加は廃止した。`exec`、不正入力の診断、変換ごとの状態分離は設計で承認された差分。
+
+## 最終レビューで追加した回帰検証
+
+- `do_perm_count` のような利用者の識別子をマクロと誤認しない。
+- `do ... while` の条件にも独自演算子とライブラリ検出を適用する。
+- `$$a,b;` は旧版どおりaだけを出力し、bを通常の式文として扱う。両方を出力する記法は `$$(a,b);`。
+- 不正な閉じ括弧 `)` / `]` は位置付きの診断を返す。
+- `vi(...)` やユーザー型のまとめた宣言を変換する。
+- 取り込んだソース中の名前も一時変数名の衝突回避に含める。
+- `_lower_bound(all(s), x)` はall展開後の引数に従って変換する。
+- 文字列中の `main(` をプログラムのmain定義と誤認しない。
+
+旧版ですでに壊れているraw string内の引用符、typedef二重ポインター、複雑な左辺へのべき乗、スライス端点の省略は、新しい構文として追加していない。dangling elseの既存の結び付きも維持する。負の指数で旧変換器が異常終了する動作は再現対象から除外する。

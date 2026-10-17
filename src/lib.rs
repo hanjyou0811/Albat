@@ -36,6 +36,16 @@ pub fn transpile(
     let mut program = parser::parse(source, options, loader, &mut libraries)?;
     let mut scope = scope::Scope::default();
     scope.reserve_source(source);
+    fn reserve_nodes(nodes: &[ir::Node], scope: &mut scope::Scope) {
+        for node in nodes {
+            scope.reserve_source(&node.text);
+            scope.reserve_source(&node.suffix);
+            if let Some(children) = &node.children {
+                reserve_nodes(children, scope);
+            }
+        }
+    }
+    reserve_nodes(&program.nodes, &mut scope);
     fn rewrite_nodes(
         nodes: &mut Vec<ir::Node>,
         scope: &mut scope::Scope,
@@ -58,7 +68,12 @@ pub fn transpile(
                     });
                 }
             }
-            if node.text.starts_with("do_perm") {
+            if node.children.is_some()
+                && node
+                    .text
+                    .strip_prefix("do_perm")
+                    .is_some_and(|rest| rest.trim_start().starts_with('('))
+            {
                 let open = node.text.find('(').unwrap();
                 let close = scan::matching_close(&node.text, open)?;
                 let args = transform::macros::rewrite(&node.text[open + 1..close])?;
@@ -130,6 +145,9 @@ pub fn transpile(
                     error.line += node.line.saturating_sub(1);
                     error
                 })?;
+            }
+            if node.suffix.trim_start().starts_with("while") {
+                node.suffix = transform::rewrite(&node.suffix, scope, libs)?;
             }
             if let Some(children) = &mut node.children {
                 rewrite_nodes(children, scope, libs, loader)?;

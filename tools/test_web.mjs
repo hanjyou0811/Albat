@@ -23,6 +23,15 @@ try {
   page.on('pageerror', error => errors.push(String(error)));
   await page.goto(`http://127.0.0.1:${server.address().port}/albat.html`);
   await page.waitForFunction(() => !document.querySelector('#runButton').disabled, undefined, {timeout:10000});
+  for (const name of ['io.al', 'op.al', 'sample2.al']) {
+    await page.locator('#tabBar .tab', {hasText:name}).click();
+    const source = await readFile(resolve(root,'sample',name),'utf8');
+    assert.equal(await page.locator('#inputText').inputValue(), source);
+    await page.locator('#runButton').click();
+    const native = spawnSync(resolve(root,'target/debug/albat'), {input:source,encoding:'utf8',timeout:10000});
+    assert.equal(native.status, 0);
+    assert.equal(await page.locator('#output').textContent(), native.stdout);
+  }
   const cases = JSON.parse(await readFile(resolve(root,'tests/fixtures/cases.json'),'utf8'));
   for (const item of cases) {
     const source = item.source ?? await readFile(resolve(root,item.path),'utf8');
@@ -42,7 +51,7 @@ try {
   assert.match(recovered,/int main/);
   assert.ok(!recovered.includes('class FastIO'), 'previous FastIO state leaked');
   assert.deepEqual(errors,[]);
-  console.log(`PASS browser: ${cases.length} native/WASM cases, error recovery, state isolation`);
+  console.log(`PASS browser: ${cases.length} native/WASM cases, sample tabs, error recovery, state isolation`);
 } finally {
   if (browser) await browser.close();
   await new Promise(resolve => server.close(resolve));

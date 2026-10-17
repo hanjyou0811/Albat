@@ -138,3 +138,61 @@ fn diagnostics_retain_the_configured_source_name() {
     assert_eq!(error.source, "broken.al");
     assert_eq!(error.line, 2);
 }
+#[test]
+fn grouped_container_and_user_type_declarations() {
+    assert_eq!(
+        run_cpp(&translate("vi(a={1,2},b={3,4}); cout<<a[0]<<b[1];"), ""),
+        "14"
+    );
+    assert_eq!(
+        run_cpp(
+            &translate("struct Box {int x;}; {Box(a={3},b={4}); cout<<a.x<<b.x;}"),
+            ""
+        ),
+        "34"
+    );
+}
+#[test]
+fn included_names_do_not_collide_with_generated_names() {
+    struct Files;
+    impl albat::SourceLoader for Files {
+        fn load(&self, _: &str, _: &str) -> Result<String, albat::Diagnostic> {
+            Ok("int albat_tmp_0=9,a=1,b=2; (a,b)=(b,a); cout<<albat_tmp_0<<a<<b;".into())
+        }
+    }
+    let cpp = albat::transpile("#include values.al\n", &albat::Options::default(), &Files).unwrap();
+    assert_eq!(run_cpp(&cpp, ""), "921");
+}
+#[test]
+fn do_while_conditions_are_translated() {
+    assert_eq!(
+        run_cpp(&translate("{ do { $$1; } while(2**1==0); }"), ""),
+        "1\n"
+    );
+}
+#[test]
+fn macro_prefix_in_user_identifiers_does_not_panic() {
+    assert_eq!(
+        run_cpp(
+            &translate("{ int do_perm_count=0; do_perm_count++; $$do_perm_count; }"),
+            ""
+        ),
+        "1\n"
+    );
+}
+#[test]
+fn unmatched_closing_delimiters_are_diagnostics() {
+    for source in ["int a=1);", "int a=1];"] {
+        let error =
+            albat::transpile(source, &albat::Options::default(), &albat::NoSources).unwrap_err();
+        assert_eq!(error.line, 1);
+        assert_eq!(error.column, 8);
+    }
+}
+#[test]
+fn main_like_text_in_literals_does_not_change_program_structure() {
+    assert_eq!(
+        run_cpp(&translate("if(string(\"main(\").size()==5) cout<<1;"), ""),
+        "1"
+    );
+}

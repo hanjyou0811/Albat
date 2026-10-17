@@ -349,5 +349,68 @@
     "stdin": "",
     "stdout": "all(v), rep(i,n), @ **",
     "classification": "normal"
+  },
+  {
+    "id": "preprocessor",
+    "source": "#define N 3\n{\n#ifdef N\ncout<<N;\n#else\ncout<<9;\n#endif\n}\n",
+    "stdin": "",
+    "stdout": "3",
+    "classification": "normal"
+  },
+  {
+    "id": "operator_precedence",
+    "source": "{cout<<(2+3 ** 2*4)<<\":\"<<(2 ** 3 ** 2)<<\":\"<<(-2 ** 2);}",
+    "stdin": "",
+    "stdout": "38:64:-4",
+    "classification": "normal"
+  },
+  {
+    "id": "operator_operands",
+    "source": "int f(int a){return a+1;}\n{vi a={2,3}; cout<<(f(a[0]) ** 2)<<\":\"<<(a[1] ** f(1));}",
+    "stdin": "",
+    "stdout": "9:9",
+    "classification": "normal"
+  },
+  {
+    "id": "grouped_containers",
+    "source": "vi(a={1,2},b={3,4}); cout<<a[0]<<b[1];",
+    "stdin": "",
+    "stdout": "14",
+    "classification": "normal"
+  },
+  {
+    "id": "do_while_operator",
+    "source": "{ do { $$1; } while(2**1==0); }",
+    "stdin": "",
+    "stdout": "1\n",
+    "classification": "normal"
+  },
+  {
+    "id": "macro_prefix_identifier",
+    "source": "{ int do_perm_count=0; do_perm_count++; $$do_perm_count; }",
+    "stdin": "",
+    "stdout": "1\n",
+    "classification": "normal"
+  },
+  {
+    "id": "bare_output_comma",
+    "source": "{ int a=2,b=3; $$a,b; }",
+    "stdin": "",
+    "stdout": "2\n",
+    "classification": "normal"
+  },
+  {
+    "id": "bound_all",
+    "source": "set<int> s={1,3,5}; cout<<*_lower_bound(all(s),2)<<*_upper_bound(all(s),3);",
+    "stdin": "",
+    "stdout": "35",
+    "classification": "normal"
+  },
+  {
+    "id": "main_literal",
+    "source": "if(string(\"main(\").size()==5) cout<<1;",
+    "stdin": "",
+    "stdout": "1",
+    "classification": "normal"
   }
 ]

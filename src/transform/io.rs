@@ -21,7 +21,17 @@ pub fn rewrite(
     let body = s.trim_end_matches(';').trim();
     if body.starts_with('$') {
         let n = body.bytes().take_while(|&b| b == b'$').count();
-        let args = split_top_level(unwrap_parens(&body[n..])?, ',')?;
+        let argument = body[n..].trim();
+        let grouped =
+            argument.starts_with('(') && matching_close(argument, 0)? == argument.len() - 1;
+        let mut args = split_top_level(unwrap_parens(argument)?, ',')?;
+        // Legacy parses bare comma tails as ordinary statements; parentheses opt
+        // into a list of output values.
+        let tail = if !grouped && args.len() > 1 {
+            args.split_off(1)
+        } else {
+            Vec::new()
+        };
         let mut sep = None;
         let mut values = Vec::new();
         for arg in args {
@@ -45,6 +55,10 @@ pub fn rewrite(
                 v,
                 sep.map(|s| format!(", {s}")).unwrap_or_default()
             ));
+        }
+        for statement in tail {
+            out.push_str(statement);
+            out.push(';');
         }
         return Ok(Some(out));
     }

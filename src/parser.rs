@@ -52,8 +52,12 @@ pub fn parse(
     Ok(Program { nodes })
 }
 pub fn contains_main(s: &str) -> bool {
+    let Ok(mask) = code_mask(s) else {
+        return false;
+    };
     s.match_indices("main").any(|(i, _)| {
-        (i == 0 || !is_identifier_byte(s.as_bytes()[i - 1]))
+        mask[i..i + 4].iter().all(|&code| code)
+            && (i == 0 || !is_identifier_byte(s.as_bytes()[i - 1]))
             && s[i + 4..].trim_start().starts_with('(')
     })
 }
@@ -267,6 +271,9 @@ impl Parser<'_> {
                     node.text = self.source[start..=i].trim().into();
                     self.cursor = i + 1;
                     return Ok(node);
+                }
+                b')' | b']' => {
+                    return Err(self.error(i, "unexpected closing delimiter"));
                 }
                 b'}' => {
                     return Err(self.error(i, "expected semicolon before closing brace"));

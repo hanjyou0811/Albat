@@ -100,3 +100,23 @@ fn grouped_declarations_and_input_options() {
         "1 2 3\n"
     );
 }
+#[test]
+fn unparenthesized_output_preserves_legacy_comma_statements() {
+    assert_eq!(run_cpp(&translate("{ int a=2,b=3; $$a,b; }"), ""), "2\n");
+    assert_eq!(
+        run_cpp(&translate("{ int a=2,b=3; $$(a,b); }"), ""),
+        "2\n3\n"
+    );
+}
+#[test]
+fn bound_macros_expand_nested_all_before_splitting_arguments() {
+    assert_eq!(
+        run_cpp(
+            &translate(
+                "set<int> s={1,3,5}; cout<<*_lower_bound(all(s),2)<<*_upper_bound(all(s),3);"
+            ),
+            ""
+        ),
+        "35"
+    );
+}
