@@ -1,0 +1,9 @@
+[package]
+name = "albat"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Albat to C++ transpiler"
+
+[lib]
+crate-type = ["rlib", "cdylib"]

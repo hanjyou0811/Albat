@@ -2,3 +2,6 @@ bin*
 build*
 
 .worktrees/
+
+/target/
+__pycache__/
