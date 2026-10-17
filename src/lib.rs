@@ -19,3 +19,5 @@ impl SourceLoader for NoSources {
         })
     }
 }
+
+pub mod library;

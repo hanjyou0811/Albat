@@ -1,0 +1,1 @@
+template<class S, class T> bool chmax(S &a, T b){if(a<b) { a=b;return 1;} return 0;}

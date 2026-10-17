@@ -1,0 +1,522 @@
+[
+  {
+    "name": "pragma",
+    "file": "pragma.cpp",
+    "position": "head",
+    "dependencies": [
+      "Ofast",
+      "unroll-loops"
+    ],
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "Ofast",
+    "file": "Ofast.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "75d5362bdab6c05b82fb7198c5a54a0ed685f51b7c5b701c3e4b59fec200a44e"
+  },
+  {
+    "name": "unroll-loops",
+    "file": "unroll-loops.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "52c466df721bfe4ba811ca1edf521ea3a6223ade095dc6f9be655e2f4aa9678b"
+  },
+  {
+    "name": "stdc++",
+    "file": "stdcpp.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "16b5c4f1945cfd1abe153b47b8f41d50d1d17503df33ccb8696eea7e0f631220"
+  },
+  {
+    "name": "namespace_std",
+    "file": "namespace_std.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "6128865e34b4473605fc3afce404e9b3dce73fbdbe5928207f96184ea6bd1b42"
+  },
+  {
+    "name": "ACL",
+    "file": "ACL.cpp",
+    "position": "head",
+    "dependencies": [
+      "namespace_acl"
+    ],
+    "sha256": "7d219e763bab65ce6084fd6ff15a3949553d367b943e83edb9e3c0e41ffa3b0e"
+  },
+  {
+    "name": "namespace_acl",
+    "file": "namespace_acl.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "d0d2163662cb9861d41337c3bebc7b9413e6be790c82d9bad02472a9b0d12295"
+  },
+  {
+    "name": "DEFINE_INT_LL",
+    "file": "DEFINE_INT_LL.cpp",
+    "position": "header_of_main",
+    "dependencies": [],
+    "sha256": "e481238392cbbd8bbed2f28a8ef658049278e8df94afca938cece5ffc0a5f4b8"
+  },
+  {
+    "name": "gcd",
+    "file": "gcd.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "d1407fa1b983051e54c4a7f882831525b7ae180673e882fc15e8facc1d4151e1"
+  },
+  {
+    "name": "lcm",
+    "file": "lcm.cpp",
+    "position": "head",
+    "dependencies": [
+      "gcd"
+    ],
+    "sha256": "19268e24dc58b469d3ec51b6e6c3a5cf18a55b33260d6d3cda4a15d3d7a5cb01"
+  },
+  {
+    "name": "_pow",
+    "file": "_pow.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "2ce9a7e411bda166d33c65d630003101ac8c740baf5613f9ff34ff182ada9363"
+  },
+  {
+    "name": "_div",
+    "file": "_div.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "de5afd5d5cd9fdcc22492a4c024eb1474559160177781d3d72266cafac125473"
+  },
+  {
+    "name": "_mod",
+    "file": "_mod.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "e6ad616dfe92830f1314051012a036162569b3e745c9f0b28d9db8099c49f3cb"
+  },
+  {
+    "name": "makePrimes",
+    "file": "makePrimes.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "bee1e5cf3ddf4e3f67ac5467b5cb1c7fc2fb23ce1104220dd6001864677e9f0e"
+  },
+  {
+    "name": "divnum",
+    "file": "divnum.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "7971a2daac72610bf510919ec3cf3c152f8476cd3dc8439f17e638db4ce47636"
+  },
+  {
+    "name": "popcount",
+    "file": "popcount.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "cd9e24745ba66a5c61cc745172cd4244be4bad9bf7a01c4ecd044415ebb6b870"
+  },
+  {
+    "name": "popcountl",
+    "file": "popcountl.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "9741ebfa8a8b9b665c010465bc2b6a95402f3884e22d14f96d97be08941a235e"
+  },
+  {
+    "name": "bit_enumerate",
+    "file": "bit_enumerate.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "f25efd03275fe87e88b96ab493b7418c4d6ad16f37f3ac94691d8f859ebb6aad"
+  },
+  {
+    "name": "hasbit",
+    "file": "hasbit.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "4227a16a32b5eb4e8788d4c78c1a96de926a0e4750ff110cadae79680a3b4b28"
+  },
+  {
+    "name": "bitlen",
+    "file": "bitlen.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "dec194e5b96963c4514511e6472b8898a278c4ff9820ad8ae19e204c52579948"
+  },
+  {
+    "name": "UnionFind",
+    "file": "UnionFind.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "cc1fe0346fca587e3457133303d3111ee506fccd1ab21ae1d98e57d596deda13"
+  },
+  {
+    "name": "WeightedUnionFind",
+    "file": "WeightedUnionFind.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "d39f9e2d3e84c048419fd33664a2ea9e9666f11677a8f04ac71f0bd7d995fb79"
+  },
+  {
+    "name": "_SegTree",
+    "file": "_SegTree.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "0c6c73d882c90728991712aa4cb76cbb6c8c6409cf80db83ff1d9215737ac72c"
+  },
+  {
+    "name": "SegTree_pt_max",
+    "file": "SegTree_pt_max.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "31f3cbaf062a7aef8b616e988ebf547f287f43dc2267b7aec8c3936ba1a495d1"
+  },
+  {
+    "name": "SegTree_pt_min",
+    "file": "SegTree_pt_min.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "90ce6aff9b7390dc3688af20d0360c07959008afc215da729cc08acc599f51da"
+  },
+  {
+    "name": "SegTree_pt_sum",
+    "file": "SegTree_pt_sum.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "9335d8f50093e8e9167c47d971aa09bf87eecbce902d27195cb05434c65bae60"
+  },
+  {
+    "name": "Fenwick_tree",
+    "file": "Fenwick_tree.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "ab725f3c64c7ca72716fe714850d85072b84136e7d0f1571d68e29eb8c5860f7"
+  },
+  {
+    "name": "DEFINE_MOD",
+    "file": "DEFINE_MOD.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "97a0de48eb94a24d4de9e1c6172acef5329513d4242e61eeda53cc6654fff9ea"
+  },
+  {
+    "name": "mint",
+    "file": "mint.cpp",
+    "position": "head",
+    "dependencies": [
+      "mint_init",
+      "DEFINE_MOD"
+    ],
+    "sha256": "66532421f8613c0fced6de3fe73046ad472a7e4e77b7850e0c7b775370507f86"
+  },
+  {
+    "name": "mint_init",
+    "file": "mint_init.cpp",
+    "position": "header_of_main",
+    "dependencies": [],
+    "sha256": "b0b6fb8d7ce9cbbb0bc0e007654b2df64a3289350ba57464b83df66c437ae3a3"
+  },
+  {
+    "name": "modint",
+    "file": "modint.cpp",
+    "position": "head",
+    "dependencies": [
+      "modint_init",
+      "DEFINE_MOD"
+    ],
+    "sha256": "b21f1cd4373993f20660b9f9b61f6d8e46755eb59b75e8ba1ad647b085915266"
+  },
+  {
+    "name": "modint_init",
+    "file": "modint_init.cpp",
+    "position": "header_of_main",
+    "dependencies": [],
+    "sha256": "7bddc391dec554708557b1ecd850a4ab485aec004ef91332ee359ac084170c63"
+  },
+  {
+    "name": "mod_int",
+    "file": "mod_int.cpp",
+    "position": "head",
+    "dependencies": [
+      "mod_int_init",
+      "DEFINE_MOD"
+    ],
+    "sha256": "73b176028af636f0f33bb1f899124410737a4c53b949de2359344270b244b1f0"
+  },
+  {
+    "name": "mod_int_init",
+    "file": "mod_int_init.cpp",
+    "position": "header_of_main",
+    "dependencies": [],
+    "sha256": "ff87a2e0614536eb91f17d8594a09124694ae69408fd40ea9721dcd8b2e4b091"
+  },
+  {
+    "name": "MexSet",
+    "file": "MexSet.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "eb899e729b1844c28c554071885571b171cc90d582cdab8d8ed54c408a594bef"
+  },
+  {
+    "name": "FastIO",
+    "file": "FastIO.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "ff05daaa6006a3e017481203788fbd99bb2fc3b78ebe9c4c3b7a2ec60433c190"
+  },
+  {
+    "name": "FastIO_flush",
+    "file": "FastIO_flush.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "4f36d35193f7e3e486cbd3fcffe35e68ba923496c66d09c4b1c5289e09296f3d"
+  },
+  {
+    "name": "istream",
+    "file": "istream.cpp",
+    "position": "head",
+    "dependencies": [
+      "istream_pair",
+      "istream_vector"
+    ],
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "istream_pair",
+    "file": "istream_pair.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "4a05621997b0683ce25a969d0d804f01fd74fe77e26a3bf5ae3cc29789eb7195"
+  },
+  {
+    "name": "istream_vector",
+    "file": "istream_vector.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "da999e3c1a6f4ef5585e0a0c78356ef64bd42ef63d095e1510241b64f0226005"
+  },
+  {
+    "name": "ostream",
+    "file": "ostream.cpp",
+    "position": "head",
+    "dependencies": [
+      "ostream_pair",
+      "ostream_set",
+      "ostream_map",
+      "ostream_vector",
+      "ostream_vector_vector"
+    ],
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "ostream_pair",
+    "file": "ostream_pair.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "9820271ad879cb82d2e80ef3056fd1849dfaf54cf9956e145edf82b01ebea55b"
+  },
+  {
+    "name": "ostream_set",
+    "file": "ostream_set.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "b1f1bc045ae3d7074d43556625f74f73d818602589b582a8329fb1c82e6b372a"
+  },
+  {
+    "name": "ostream_map",
+    "file": "ostream_map.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "b1ac25694f4d477084a17f7d9c3741a2f99603793b317fc2f8501beb55f21e93"
+  },
+  {
+    "name": "ostream_vector",
+    "file": "ostream_vector.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "811d125d5498516dbbff7870bc2e292bd025eb00db0186b8d1829c3b5ed217db"
+  },
+  {
+    "name": "ostream_vector_vector",
+    "file": "ostream_vector_vector.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "664a00c6700feb3825a2e018613a1760542bf476cb6e40dd7d7e8d8af44d48d4"
+  },
+  {
+    "name": "SYNC_WITH_STDIO",
+    "file": "SYNC_WITH_STDIO.cpp",
+    "position": "header_of_main",
+    "dependencies": [],
+    "sha256": "5c45592905541096d80afcd25520f4243b6f3c484a653da390f9f0a9d50eb4d2"
+  },
+  {
+    "name": "CIN_TIE",
+    "file": "CIN_TIE.cpp",
+    "position": "header_of_main",
+    "dependencies": [],
+    "sha256": "6bf43c8268e2d6c27b7b2458c8d855cf18c37bd6ac516ed85a6e333873f96a80"
+  },
+  {
+    "name": "chmax",
+    "file": "chmax.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "4ebe947edd9610ee9f33e556961cb121ffbd06576e3a38ad50d9406d2907903c"
+  },
+  {
+    "name": "chmin",
+    "file": "chmin.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "928a791a8408d814e9df43c57f80e193f37f38ac3f467bb679ac9cdee212f69e"
+  },
+  {
+    "name": "biseek",
+    "file": "biseek.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "eebc61ed684143d6a523c3cb545c25780581f7e8e0113e1e5c5b8582a5a04fd8"
+  },
+  {
+    "name": "runLengthEncoding",
+    "file": "runLengthEncoding.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "3cce3ab16adb7f08f8ea15f58096376ae7b036fd1516181cee151ad480f89756"
+  },
+  {
+    "name": "CycleLib",
+    "file": "CycleLib.cpp",
+    "position": "head",
+    "dependencies": [
+      "_mod"
+    ],
+    "sha256": "203636cc160aa17526b9c9f29ee7a74cebfb6ac0db645e374b894f06ff41e7ab"
+  },
+  {
+    "name": "yesno",
+    "file": "yesno.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "8d7b1dda66ebac11a4d571bd83f2bf06b4932ce5ea8516c742a4a9de8680775d"
+  },
+  {
+    "name": "inversionnumber",
+    "file": "inversionnumber.cpp",
+    "position": "head",
+    "dependencies": [
+      "Fenwick_tree"
+    ],
+    "sha256": "ec89997c482d83551b485f1ac059a3ecdce0e576fe6d3396c373f8bebf1e72bb"
+  },
+  {
+    "name": "Slice",
+    "file": "Slice.cpp",
+    "position": "head",
+    "dependencies": [
+      "Slice_vec",
+      "Slice_str"
+    ],
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "Slice_vec",
+    "file": "Slice_vec.cpp",
+    "position": "head",
+    "dependencies": [
+      "_mod"
+    ],
+    "sha256": "b261fe27484162508a7e5d005908d4553564a01398f7b59bb5deebd892681e82"
+  },
+  {
+    "name": "Slice_str",
+    "file": "Slice_str.cpp",
+    "position": "head",
+    "dependencies": [
+      "_mod"
+    ],
+    "sha256": "9064e902a00432b7ca641f76258519f6d053d8fcf90e5c6c60992e805f0eaef7"
+  },
+  {
+    "name": "trim",
+    "file": "trim.cpp",
+    "position": "head",
+    "dependencies": [
+      "trim_str",
+      "trim_vec"
+    ],
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "trim_str",
+    "file": "trim_str.cpp",
+    "position": "head",
+    "dependencies": [
+      "ltrim_str",
+      "rtrim_str"
+    ],
+    "sha256": "4c7eb3b38fdb9eb1751fa445fbec4875a6a6652c610bb633c34a1d2c34968feb"
+  },
+  {
+    "name": "trim_vec",
+    "file": "trim_vec.cpp",
+    "position": "head",
+    "dependencies": [
+      "ltrim_vec",
+      "rtrim_vec"
+    ],
+    "sha256": "9cb5e5fb5bb94b7f2ab76459eea46787f3e4fba4e45fe410169ee103ef3bceae"
+  },
+  {
+    "name": "ltrim",
+    "file": "ltrim.cpp",
+    "position": "head",
+    "dependencies": [
+      "ltrim_str",
+      "ltrim_vec"
+    ],
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "ltrim_str",
+    "file": "ltrim_str.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "999ad412b1257eadfd71f249e2065286a632bd9d092be50dbdebccd9bd525378"
+  },
+  {
+    "name": "ltrim_vec",
+    "file": "ltrim_vec.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "b26c4b4c58c220fac8f9c820d7ad0930c89fb8dd8d5951e13433f608c79b80b5"
+  },
+  {
+    "name": "rtrim",
+    "file": "rtrim.cpp",
+    "position": "head",
+    "dependencies": [
+      "rtrim_str",
+      "rtrim_vec"
+    ],
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "rtrim_str",
+    "file": "rtrim_str.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "21cb5cf748eacd450f652ec5a9ef777b0c45d4af0165788a2879cbaf615ac4ff"
+  },
+  {
+    "name": "rtrim_vec",
+    "file": "rtrim_vec.cpp",
+    "position": "head",
+    "dependencies": [],
+    "sha256": "54605fef3758178056d8ce4e54431994fab411a497e579c707eaff5460364adb"
+  }
+]
