@@ -1,2 +1,9 @@
 bin*
 build*
+
+.worktrees/
+
+/target/
+__pycache__/
+
+/node_modules/

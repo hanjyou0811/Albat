@@ -114,9 +114,8 @@
   <pre>結果:
 <span id="output"></span></pre>
 
-  <script src="bin/albat.js"></script>
-  <script>
-    let processString = null;
+  <script type="module">
+    import init, { process_string } from "./bin/albat.js";
 
     const textarea = document.getElementById('inputText');
     const lineNumbers = document.getElementById('lineNumbers');
@@ -183,22 +182,22 @@
       }
     });
 
-    initSamples();
     updateLineNumbers();
-
-    Module['onRuntimeInitialized'] = () => {
-      console.log("wasm！");
-      processString = Module.cwrap('processString', 'string', ['string']);
-
-      const button = document.getElementById('runButton');
-      button.disabled = false;
-      button.onclick = () => {
-        const input = textarea.value;
-        const result = processString(input);
-        // console.log(result);
-        document.getElementById('output').innerText = result;
-      };
+    const button = document.getElementById('runButton');
+    const output = document.getElementById('output');
+    button.onclick = () => {
+      try {
+        output.textContent = process_string(textarea.value);
+      } catch (error) {
+        output.textContent = String(error);
+      }
     };
+    try {
+      await Promise.all([init(), initSamples()]);
+      button.disabled = false;
+    } catch (error) {
+      output.textContent = '読み込みに失敗しました: ' + String(error);
+    }
   </script>
 </body>
 </html>
