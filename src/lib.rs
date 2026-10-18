@@ -59,7 +59,7 @@ pub fn transpile(
                 node.text = header;
                 if !prelude.is_empty() {
                     result.push(ir::Node {
-                        text: prelude,
+                        text: transform::rewrite(&prelude, scope, libs)?,
                         children: None,
                         suffix: String::new(),
                         source: node.source.clone(),

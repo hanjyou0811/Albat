@@ -1,5 +1,5 @@
 use crate::{
-    scan::{code_mask, is_identifier_byte, matching_close, split_top_level},
+    scan::{code_mask, is_identifier_byte, matching_close, split_arguments},
     Diagnostic,
 };
 pub fn rewrite(source: &str) -> Result<String, Diagnostic> {
@@ -40,7 +40,7 @@ pub fn rewrite(source: &str) -> Result<String, Diagnostic> {
                     continue;
                 }
                 let close = matching_close(&s, open)?;
-                let args = split_top_level(&s[open + 1..close], ',')?;
+                let args = split_arguments(&s[open + 1..close])?;
                 let mut a: Vec<String> = args
                     .iter()
                     .map(|a| rewrite(a.trim()))
@@ -78,7 +78,7 @@ pub fn rewrite(source: &str) -> Result<String, Diagnostic> {
                         // all() expands into two iterator arguments before the
                         // legacy bound macro chooses its overload.
                         let expanded = a.join(",");
-                        let a = split_top_level(&expanded, ',')?;
+                        let a = split_arguments(&expanded)?;
                         match a.len() {
                             1 => format!("{}({})", function, a[0]),
                             2 => format!("{}.{}({})", a[0], function, a[1]),

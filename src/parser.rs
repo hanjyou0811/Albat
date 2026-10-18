@@ -292,7 +292,7 @@ impl Parser<'_> {
                     }
                     let structural =
                         matches!(leading_keyword(head), "struct" | "class" | "namespace");
-                    let function = head.contains(')')
+                    let function = is_function_header(head)?
                         && (crate::scan::split_top_level(head, '=')?.len() == 1
                             || head.contains("operator"));
                     if structural || function {
@@ -378,4 +378,33 @@ fn leading_keyword(mut source: &str) -> &str {
         .split(|c: char| !(c.is_alphanumeric() || c == '_'))
         .next()
         .unwrap_or("")
+}
+
+// A completed call anywhere in an expression does not make the following
+// initializer a function body. Require a parameter list followed only by
+// declarator qualifiers (or a trailing return type).
+fn is_function_header(head: &str) -> Result<bool, Diagnostic> {
+    if matches!(leading_keyword(head), "return" | "throw" | "co_return") {
+        return Ok(false);
+    }
+    let mask = code_mask(head)?;
+    let code: String = head
+        .char_indices()
+        .filter_map(|(i, c)| mask[i].then_some(c))
+        .collect();
+    let Some(close) = code.rfind(')') else {
+        return Ok(false);
+    };
+    let tail = code[close + 1..].trim();
+    if tail.starts_with("->") {
+        return Ok(true);
+    }
+    Ok(tail
+        .split(|c: char| c.is_whitespace() || c == '&')
+        .all(|word| {
+            matches!(
+                word,
+                "" | "const" | "volatile" | "noexcept" | "override" | "final"
+            )
+        }))
 }

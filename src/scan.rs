@@ -147,3 +147,92 @@ pub fn replace_identifier(source: &str, from: &str, to: &str) -> Result<String, 
     out.push_str(&source[cursor..]);
     Ok(out)
 }
+
+/// Split macro arguments, also keeping template-ids together. Unlike ordinary
+/// delimiters, angle brackets need lookahead: `<` and `>` can be comparisons.
+pub fn split_arguments(source: &str) -> Result<Vec<&str>, Diagnostic> {
+    let mask = code_mask(source)?;
+    let bytes = source.as_bytes();
+    let mut result = Vec::new();
+    let mut start = 0;
+    let mut i = 0;
+    while i < bytes.len() {
+        if !mask[i] {
+            i += 1;
+            continue;
+        }
+        match bytes[i] {
+            b'(' | b'[' | b'{' => i = matching_close(source, i)? + 1,
+            b'<' => {
+                if let Some(close) = template_close(source, &mask, i)? {
+                    i = close + 1;
+                } else {
+                    i += 1;
+                }
+            }
+            b',' => {
+                result.push(&source[start..i]);
+                i += 1;
+                start = i;
+            }
+            b')' | b']' | b'}' => {
+                return Err(Diagnostic::at(source, i, "mismatched bracket"));
+            }
+            _ => i += 1,
+        }
+    }
+    result.push(&source[start..]);
+    Ok(result)
+}
+
+fn template_close(source: &str, mask: &[bool], open: usize) -> Result<Option<usize>, Diagnostic> {
+    let b = source.as_bytes();
+    let previous = (0..open)
+        .rev()
+        .find(|&i| mask[i] && !b[i].is_ascii_whitespace());
+    if !previous.is_some_and(|i| is_identifier_byte(b[i]))
+        || matches!(b.get(open + 1), Some(b'=' | b'<'))
+        || (open > 0 && b[open - 1] == b'<')
+    {
+        return Ok(None);
+    }
+    let mut depth = 1;
+    let mut i = open + 1;
+    while i < b.len() {
+        if !mask[i] {
+            i += 1;
+            continue;
+        }
+        match b[i] {
+            b'(' | b'[' | b'{' => {
+                i = matching_close(source, i)? + 1;
+                continue;
+            }
+            b'<' => depth += 1,
+            b'>' => {
+                depth -= 1;
+                if depth == 0 {
+                    let next = (i + 1..b.len()).find(|&p| mask[p] && !b[p].is_ascii_whitespace());
+                    // A following operand means this was a comparison, e.g.
+                    // `a < b, c > d`, rather than a template-id.
+                    return Ok(
+                        if next.is_none_or(|p| {
+                            matches!(
+                                b[p],
+                                b'(' | b'{' | b':' | b',' | b'>' | b')' | b']' | b'}' | b'.'
+                            )
+                        }) {
+                            Some(i)
+                        } else {
+                            None
+                        },
+                    );
+                }
+            }
+            b';' | b')' | b']' | b'}' => return Ok(None),
+            _ => {}
+        }
+        i += 1;
+    }
+    Ok(None)
+}

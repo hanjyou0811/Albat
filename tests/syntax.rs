@@ -276,3 +276,31 @@ fn review_switch_labels_allow_compound_statements() {
         "7"
     );
 }
+
+#[test]
+fn review_calls_before_braced_initializers_are_not_functions() {
+    let source = "bool cond(){return true;} vector<int> f(){return cond() ? vector<int>{1} : vector<int>{2};} {cout<<f()[0];}";
+    assert_eq!(run_cpp(&translate(source), ""), "1");
+}
+
+#[test]
+fn review_control_input_aliases_are_rewritten() {
+    assert_eq!(
+        run_cpp(&translate("{if(ll@x) cout<<x;}"), "3000000000\n"),
+        "3000000000"
+    );
+}
+
+#[test]
+fn review_macro_template_commas_are_nested() {
+    assert_eq!(
+        run_cpp(&translate("{cout<<len(vector<pair<int,int>>{{1,2}});}"), ""),
+        "1"
+    );
+}
+
+#[test]
+fn function_detection_preserves_qualified_declarators() {
+    let source = "struct Box {int f() const& noexcept {return 3;}}; auto value() -> int {return 4;} {Box b; cout<<b.f()<<value();}";
+    assert_eq!(run_cpp(&translate(source), ""), "34");
+}

@@ -122,8 +122,8 @@
 
 ## 再現コマンドと補足
 
-- `make test`: Rustの単体・結合テストと65ケースのコンパイル/実行/既知コンパイルエラー検証。
-- `make test-reference`: 全カタログ照合と同じ65ケースを旧変換器にも適用。現在の分類は {'normal': 56, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
+- `make test`: Rustの単体・結合テストと68ケースのコンパイル/実行/既知コンパイルエラー検証。
+- `make test-reference`: 全カタログ照合と同じ68ケースを旧変換器にも適用。現在の分類は {'normal': 59, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
 - `make test-web`: 実ブラウザで全ケースの生成C++をネイティブ版と完全一致比較し、不正入力後の復帰と状態の分離を検証する。C++をブラウザ内で実行するテストではない。
 - `python3 tools/test_build.py`: Makeビルド、CLIヘルプ、6サンプル、sampleディレクトリの内容・パーミッション不変を検証。
 - ACLは公式ac-libraryを用意し、`CPLUS_INCLUDE_PATH` を指定して `#include <atcoder/all>` とdsuの利用を両版で検証した。外部ヘッダーは同梱しない。
@@ -162,3 +162,8 @@
 - `case`/`default`の直後のブロックを初期化式と誤認せず、ラベル付きの文として解析する。ブロック内のAlbat出力、変数宣言、連続するラベル、コメントを検証する。
 - レビューの再現例を`review_if_constexpr`と`review_switch_compound`に追加し、旧C++版との比較2/2が成功。
 - より複雑な`else if constexpr`の連鎖は旧生成器で不正なelseを生成し、`rep`内の複数switch分岐の例では旧版が出力を欠落させた。これらを正常な旧版比較の成功例には数えず、Rust側の結合テストでC++として期待される結果を確認する。言語へ新しい記法を追加する変更ではない。
+
+
+## 初期化・条件入力・マクロ引数のレビュー対応
+
+関数呼び出し後のbraced initializerを関数本体と誤認する解析、制御ヘッダーから取り出した入力宣言の型エイリアス変換漏れ、マクロ引数内のテンプレートのカンマ分割を修正。3件とも修正前に再現し、旧C++版で成功する入力と実行結果を照合した。通常の比較・シフト演算子、ネストしたテンプレート、コメント、const&付き関数の維持も回帰テストで検証する。

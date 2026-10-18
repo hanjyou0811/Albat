@@ -39,3 +39,31 @@ fn empty_and_escaped_inputs() {
         vec!["a", "// ,\nb"]
     );
 }
+
+#[test]
+fn macro_arguments_distinguish_templates_from_comparisons_and_shifts() {
+    use albat::scan::split_arguments;
+    for (source, expected) in [
+        (
+            "vector<pair<int,int>>{{1,2}}, 3",
+            vec!["vector<pair<int,int>>{{1,2}}", " 3"],
+        ),
+        (
+            "make_pair<int,int>(1,2), 3",
+            vec!["make_pair<int,int>(1,2)", " 3"],
+        ),
+        ("a < b, c > d", vec!["a < b", " c > d"]),
+        ("a <= b, c >= d", vec!["a <= b", " c >= d"]),
+        ("a << 1, b >> 1", vec!["a << 1", " b >> 1"]),
+        (
+            "array<int,(8 >> 1)>{}, 2",
+            vec!["array<int,(8 >> 1)>{}", " 2"],
+        ),
+        (
+            "vector /* <ignored> */ <pair<int,int>>{}, 2",
+            vec!["vector /* <ignored> */ <pair<int,int>>{}", " 2"],
+        ),
+    ] {
+        assert_eq!(split_arguments(source).unwrap(), expected, "{source}");
+    }
+}

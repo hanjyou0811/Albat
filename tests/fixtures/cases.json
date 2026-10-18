@@ -461,5 +461,26 @@
     "stdin": "",
     "stdout": "4",
     "classification": "normal"
+  },
+  {
+    "id": "review_return_braced_initializer",
+    "source": "bool cond(){return true;} vector<int> f(){return cond() ? vector<int>{1} : vector<int>{2};} {cout<<f()[0];}",
+    "stdin": "",
+    "stdout": "1",
+    "classification": "normal"
+  },
+  {
+    "id": "review_control_input_alias",
+    "source": "{if(ll@x) cout<<x;}",
+    "stdin": "3000000000\n",
+    "stdout": "3000000000",
+    "classification": "normal"
+  },
+  {
+    "id": "review_macro_template_comma",
+    "source": "{cout<<len(vector<pair<int,int>>{{1,2}});}",
+    "stdin": "",
+    "stdout": "1",
+    "classification": "normal"
   }
 ]
