@@ -122,8 +122,8 @@
 
 ## 再現コマンドと補足
 
-- `make test`: Rustの単体・結合テストと58ケースのコンパイル/実行/既知コンパイルエラー検証。
-- `make test-reference`: 全カタログ照合と同じ58ケースを旧変換器にも適用。現在の分類は {'normal': 49, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
+- `make test`: Rustの単体・結合テストと60ケースのコンパイル/実行/既知コンパイルエラー検証。
+- `make test-reference`: 全カタログ照合と同じ60ケースを旧変換器にも適用。現在の分類は {'normal': 51, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
 - `make test-web`: 実ブラウザで全ケースの生成C++をネイティブ版と完全一致比較し、不正入力後の復帰と状態の分離を検証する。C++をブラウザ内で実行するテストではない。
 - `python3 tools/test_build.py`: Makeビルド、CLIヘルプ、6サンプル、sampleディレクトリの内容・パーミッション不変を検証。
 - ACLは公式ac-libraryを用意し、`CPLUS_INCLUDE_PATH` を指定して `#include <atcoder/all>` とdsuの利用を両版で検証した。外部ヘッダーは同梱しない。
@@ -143,3 +143,9 @@
 - 文字列中の `main(` をプログラムのmain定義と誤認しない。
 
 旧版ですでに壊れているraw string内の引用符、typedef二重ポインター、複雑な左辺へのべき乗、スライス端点の省略は、新しい構文として追加していない。dangling elseの既存の結び付きも維持する。負の指数で旧変換器が異常終了する動作は再現対象から除外する。
+
+## PR #3の追加レビュー対応
+
+`else if`の後続`else`が切り離される問題と、`Box(3);`を`Box 3;`へ書き換える問題を修正した。前者はelse-ifを連続した条件分岐として出力し、後者は括弧内が名前付き宣言の形を満たす場合だけまとめた宣言を展開する。Albatの文法変更ではなく、旧版で成功する入力の互換性修正である。
+
+`review_else_if_chain`と`review_temporary_construction`で旧版との比較を追加した。既存のまとめた宣言も回帰テストで維持を確認する。文字列の借用競合という指摘は、参照の最終使用が変更より前に終わるため再現せず、全ターゲット・全機能のビルド確認で判定した。

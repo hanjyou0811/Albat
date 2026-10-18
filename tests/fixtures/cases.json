@@ -412,5 +412,19 @@
     "stdin": "",
     "stdout": "1",
     "classification": "normal"
+  },
+  {
+    "id": "review_else_if_chain",
+    "source": "{rep(a,3){if(a==0) cout<<1; else if(a==1) cout<<2; else cout<<3;} if(false) {} else if(false) {} else if(true) {cout<<4;} else {cout<<5;}}",
+    "stdin": "",
+    "stdout": "1234",
+    "classification": "normal"
+  },
+  {
+    "id": "review_temporary_construction",
+    "source": "struct Box {int x;}; {Box(3); Box(1+2); Box(); int(a=3,b=4); cout<<a<<b;}",
+    "stdin": "",
+    "stdout": "34",
+    "classification": "normal"
   }
 ]

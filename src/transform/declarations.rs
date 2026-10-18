@@ -46,9 +46,49 @@ pub fn grouped(s: &str, scope: &Scope) -> Result<String, Diagnostic> {
         return Ok(s.into());
     }
     let close = matching_close(s, open)?;
-    if s[close + 1..].trim() == ";" {
+    let contents = &s[open + 1..close];
+    let declarators = split_top_level(contents, ',')?;
+    if s[close + 1..].trim() == ";"
+        && declarators
+            .iter()
+            .all(|part| is_declarator(part).unwrap_or(false))
+    {
         Ok(format!("{} {};", tp, &s[open + 1..close]))
     } else {
         Ok(s.into())
+    }
+}
+
+// A type followed by parentheses can also construct a temporary. Only unwrap
+// a list of named declarators; literals and general expressions stay intact.
+fn is_declarator(part: &str) -> Result<bool, Diagnostic> {
+    let mut part = part.trim().trim_start_matches(['*', '&']).trim_start();
+    let Some(first) = part.chars().next() else {
+        return Ok(false);
+    };
+    if !(first.is_alphabetic() || first == '_') {
+        return Ok(false);
+    }
+    let end = part
+        .bytes()
+        .take_while(|&b| crate::scan::is_identifier_byte(b))
+        .count();
+    if ["true", "false", "nullptr", "this"].contains(&&part[..end]) {
+        return Ok(false);
+    }
+    part = part[end..].trim_start();
+    loop {
+        if part.is_empty() {
+            return Ok(true);
+        }
+        if part.starts_with('=') {
+            return Ok(!part.starts_with("=="));
+        }
+        if part.starts_with(['[', '(', '{']) {
+            let close = matching_close(part, 0)?;
+            part = part[close + 1..].trim_start();
+        } else {
+            return Ok(false);
+        }
     }
 }

@@ -196,3 +196,19 @@ fn main_like_text_in_literals_does_not_change_program_structure() {
         "1"
     );
 }
+
+#[test]
+fn review_else_if_chains_preserve_all_branches() {
+    let source = "{rep(a,3){if(a==0) cout<<1; else if(a==1) cout<<2; else cout<<3;} if(false) {} else if(false) {} else if(true) {cout<<4;} else {cout<<5;}}";
+    assert_eq!(run_cpp(&translate(source), ""), "1234");
+}
+
+#[test]
+fn review_construction_statements_are_not_grouped_declarations() {
+    assert_eq!(
+        run_cpp(&translate("struct Box { int x; }; { Box(3); }"), ""),
+        ""
+    );
+    let cpp = translate("struct Box {int x;}; {Box(a={3},b={4}); cout<<a.x<<b.x;}");
+    assert_eq!(run_cpp(&cpp, ""), "34");
+}

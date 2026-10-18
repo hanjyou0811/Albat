@@ -203,6 +203,21 @@ impl Parser<'_> {
             node.text = word.into();
             self.cursor += word_end;
             self.skip()?;
+            // Keep an else-if header at the same level as the preceding if.
+            // Wrapping it in an else block would detach a subsequent else.
+            let rest = &self.source[self.cursor..];
+            if word == "else"
+                && rest.strip_prefix("if").is_some_and(|tail| {
+                    tail.as_bytes()
+                        .first()
+                        .is_none_or(|&b| !is_identifier_byte(b))
+                })
+            {
+                let mut branch = self.node()?;
+                branch.text = format!("else {}", branch.text);
+                branch.line = line;
+                return Ok(branch);
+            }
             if self.source.as_bytes().get(self.cursor) == Some(&b'{') {
                 self.cursor += 1;
                 node.children = Some(self.nodes(true)?);

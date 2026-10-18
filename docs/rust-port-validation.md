@@ -7,24 +7,24 @@
 | 要件 | 証拠 |
 | --- | --- |
 | 独立したRust変換器 | Cargo構成、src/lib.rs、C++コンパイラを拒否する環境でのクリーンbuild/変換成功 |
-| CLIとWASMの共有処理 | src/cli.rs・src/wasm.rsともtranspileを呼ぶ。実Chromiumとnativeの58件完全一致比較 |
-| 走査、リテラル、UTF-8、不正入力 | scan 4件、syntax 22件。未閉鎖/余分な括弧、ファイル名、行位置を検証 |
+| CLIとWASMの共有処理 | src/cli.rs・src/wasm.rsともtranspileを呼ぶ。実Chromiumとnativeの60件完全一致比較 |
+| 走査、リテラル、UTF-8、不正入力 | scan 4件、syntax 24件。未閉鎖/余分な括弧、ファイル名、行位置を検証 |
 | 関数・テンプレート・型・スコープ・lambda・include | syntax、fixtures、循環include・取り込み先の名前衝突回避テスト |
-| 入出力、宣言、タプル、独自演算子、マクロ | transforms 16件と58ケース。旧版の優先順位、裸のカンマ出力、入力++も照合 |
+| 入出力、宣言、タプル、独自演算子、マクロ | transforms 16件と60ケース。旧版の優先順位、裸のカンマ出力、入力++も照合 |
 | ライブラリ全件 | 67件の本文・名前・位置・依存・登録順序完全一致。選択/設定/状態分離のlibrary 4件 |
 | 外部ヘッダー | 公式ac-libraryを用意し、両版のatcoder::dsu利用をコンパイル・実行。ヘッダーは同梱しない |
 | CLIのrun/export/exec、失敗伝播 | cli 6件。空白/引用符を含むパス、終了7、コンパイル失敗、コンパイラ不在、ファイル入出力、相対include、stdinソース名 |
-| ブラウザ画面と連続変換 | 全58件、既存3サンプルタブの選択、エラー後の復帰、FastIO状態分離、pageerrorなし |
+| ブラウザ画面と連続変換 | 全60件、既存3サンプルタブの選択、エラー後の復帰、FastIO状態分離、pageerrorなし |
 | ビルドと利用手順 | Make native/test/reference/wasm、README、test_build。サンプル6件と成果物のハッシュ/モード不変 |
-| 意図した非互換・既知の旧不具合 | docs/compatibility.md。正常49件と既知挙動1件、旧生成器失敗6件、元ライブラリ失敗2件を区別 |
+| 意図した非互換・既知の旧不具合 | docs/compatibility.md。正常51件と既知挙動1件、旧生成器失敗6件、元ライブラリ失敗2件を区別 |
 | 独立レビュー | 別コンテキストのレビューで4件のImportantを検出。各修正をRED→GREENで検証し全体テストへ追加。Minorの保留なし |
 
 最終結果: 全検証成功。
 
 - `cargo fmt --check` / `cargo clippy --all-targets --all-features -- -D warnings`: 成功。
-- `make test`: Rustテスト53件（58ケースの互換性検証を内包）とハーネス検証4件、すべて成功。
-- `make test-reference`: カタログ67/67、比較58/58。
-- `make test-web`: 実Chromiumで58/58、サンプルタブ、エラー復帰、状態分離、pageerrorなし。
+- `make test`: Rustテスト55件（60ケースの互換性検証を内包）とハーネス検証4件、すべて成功。
+- `make test-reference`: カタログ67/67、比較60/60。
+- `make test-web`: 実Chromiumで60/60、サンプルタブ、エラー復帰、状態分離、pageerrorなし。
 - `python3 tools/test_build.py`: 成功。既存6サンプルと成果物の不変性を確認。
 - 最新コードのクリーンRust buildと標準入力変換: C++コンパイラ呼び出しゼロで成功。
 
@@ -39,3 +39,9 @@
 - レビューで確認したdangling elseの既存挙動は維持し、旧版で失敗するraw string、typedef二重ポインター、複雑なべき乗左辺、スライス端点省略を新しい構文として追加していない。未対応入力が引き続き失敗する制限は残る。旧変換器の異常終了は設計どおり再現しない。
 
 独立レビュー担当は包装・ブラウザテストを独自には再実行していない。表のテスト結果は実装担当が実行して確認する。任意のC++全構文への対応を追加する移植ではなく、既存Albatの言語境界を維持する。
+
+## PR #3の追加レビュー対応
+
+`else if`の後続`else`が切り離される問題と、`Box(3);`を`Box 3;`へ書き換える問題を修正した。前者はelse-ifを連続した条件分岐として出力し、後者は括弧内が名前付き宣言の形を満たす場合だけまとめた宣言を展開する。Albatの文法変更ではなく、旧版で成功する入力の互換性修正である。
+
+`review_else_if_chain`と`review_temporary_construction`で旧版との比較を追加した。既存のまとめた宣言も回帰テストで維持を確認する。文字列の借用競合という指摘は、参照の最終使用が変更より前に終わるため再現せず、全ターゲット・全機能のビルド確認で判定した。
