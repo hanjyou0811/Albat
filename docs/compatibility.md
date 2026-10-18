@@ -122,8 +122,8 @@
 
 ## 再現コマンドと補足
 
-- `make test`: Rustの単体・結合テストと60ケースのコンパイル/実行/既知コンパイルエラー検証。
-- `make test-reference`: 全カタログ照合と同じ60ケースを旧変換器にも適用。現在の分類は {'normal': 51, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
+- `make test`: Rustの単体・結合テストと63ケースのコンパイル/実行/既知コンパイルエラー検証。
+- `make test-reference`: 全カタログ照合と同じ63ケースを旧変換器にも適用。現在の分類は {'normal': 54, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
 - `make test-web`: 実ブラウザで全ケースの生成C++をネイティブ版と完全一致比較し、不正入力後の復帰と状態の分離を検証する。C++をブラウザ内で実行するテストではない。
 - `python3 tools/test_build.py`: Makeビルド、CLIヘルプ、6サンプル、sampleディレクトリの内容・パーミッション不変を検証。
 - ACLは公式ac-libraryを用意し、`CPLUS_INCLUDE_PATH` を指定して `#include <atcoder/all>` とdsuの利用を両版で検証した。外部ヘッダーは同梱しない。
@@ -149,3 +149,9 @@
 `else if`の後続`else`が切り離される問題と、`Box(3);`を`Box 3;`へ書き換える問題を修正した。前者はelse-ifを連続した条件分岐として出力し、後者は括弧内が名前付き宣言の形を満たす場合だけまとめた宣言を展開する。Albatの文法変更ではなく、旧版で成功する入力の互換性修正である。
 
 `review_else_if_chain`と`review_temporary_construction`で旧版との比較を追加した。既存のまとめた宣言も回帰テストで維持を確認する。文字列の借用競合という指摘は、参照の最終使用が変更より前に終わるため再現せず、全ターゲット・全機能のビルド確認で判定した。
+
+## 追加レビュー: enumと旧版の制限の切り分け
+
+- `enum E { A=3, B=4 };`のメンバー列を文の列として解析していた移植ミスを修正。通常・匿名・スコープ付き列挙型を旧版と比較し、メンバー式と末尾カンマも保持する。
+- ヘッダー付き暗黙mainでincludeが関数内に入る問題は旧C++版でも再現。[Issue #4](https://github.com/hanjyou0811/Albat/issues/4)へ分離した。現在は`#include`の後の本文を明示的な`{ ... }`で囲む。今回の移植互換性修正では文法・動作を変更しない。
+- `Box(x);`や`vector<int>(v);`は、C++20自体が宣言として解釈するため、既存変数と衝突する。変換器を介さないg++でも同じエラーを確認した。式として明示した`(Box(x));`と`(vector<int>(v));`は両版で成功し、回帰ケースに追加した。この指摘はAlbatの不具合としてIssue化しない。

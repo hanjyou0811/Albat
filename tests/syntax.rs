@@ -212,3 +212,40 @@ fn review_construction_statements_are_not_grouped_declarations() {
     let cpp = translate("struct Box {int x;}; {Box(a={3},b={4}); cout<<a.x<<b.x;}");
     assert_eq!(run_cpp(&cpp, ""), "34");
 }
+
+#[test]
+fn review_enum_members_are_not_statements() {
+    assert_eq!(
+        run_cpp(&translate("enum E { A=3, B=4 }; {cout<<A<<B;}"), ""),
+        "34"
+    );
+    assert_eq!(
+        run_cpp(
+            &translate("enum class E : unsigned { A=3, B=A+1, }; {cout<<int(E::B);}"),
+            ""
+        ),
+        "4"
+    );
+}
+
+#[test]
+fn review_headers_with_explicit_main_remain_at_file_scope() {
+    let dir = tempfile::tempdir().unwrap();
+    let header = dir.path().join("header.hpp");
+    std::fs::write(
+        &header,
+        "namespace test_header { inline int value(){return 7;} }\n",
+    )
+    .unwrap();
+    let source = format!(
+        "#include \"{}\"\n{{cout<<test_header::value();}}",
+        header.display()
+    );
+    assert_eq!(run_cpp(&translate(&source), ""), "7");
+}
+
+#[test]
+fn review_parenthesized_construction_expressions_are_preserved() {
+    let source = "struct Box {int x;}; {int x=3; (Box(x)); vector<int> v={1,2}; (vector<int>(v)); cout<<x<<v.size();}";
+    assert_eq!(run_cpp(&translate(source), ""), "32");
+}

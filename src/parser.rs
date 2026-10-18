@@ -258,10 +258,15 @@ impl Parser<'_> {
                 }
                 b'{' => {
                     let head = self.source[start..i].trim();
-                    let structural = matches!(
-                        leading_keyword(head),
-                        "struct" | "class" | "namespace" | "enum"
-                    );
+                    // Enumerators form a comma-separated member list, not a
+                    // block of semicolon-terminated statements. Keep the body
+                    // in the surrounding declaration through its semicolon.
+                    if leading_keyword(head) == "enum" {
+                        i = matching_close(self.source, i)? + 1;
+                        continue;
+                    }
+                    let structural =
+                        matches!(leading_keyword(head), "struct" | "class" | "namespace");
                     let function = head.contains(')')
                         && (crate::scan::split_top_level(head, '=')?.len() == 1
                             || head.contains("operator"));

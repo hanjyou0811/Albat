@@ -426,5 +426,26 @@
     "stdin": "",
     "stdout": "34",
     "classification": "normal"
+  },
+  {
+    "id": "review_enum_members",
+    "source": "enum E { A=3, B=4 }; {enum { C=5, D=C+1 }; cout<<A<<B<<C<<D;}",
+    "stdin": "",
+    "stdout": "3456",
+    "classification": "normal"
+  },
+  {
+    "id": "review_scoped_enum",
+    "source": "enum class E : unsigned { A=3, B=A+1, }; {cout<<int(E::B);}",
+    "stdin": "",
+    "stdout": "4",
+    "classification": "normal"
+  },
+  {
+    "id": "review_construction_expression",
+    "source": "struct Box {int x;}; {int x=3; (Box(x)); vector<int> v={1,2}; (vector<int>(v)); cout<<x<<v.size();}",
+    "stdin": "",
+    "stdout": "32",
+    "classification": "normal"
   }
 ]
