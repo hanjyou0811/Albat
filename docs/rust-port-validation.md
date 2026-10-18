@@ -7,24 +7,24 @@
 | 要件 | 証拠 |
 | --- | --- |
 | 独立したRust変換器 | Cargo構成、src/lib.rs、C++コンパイラを拒否する環境でのクリーンbuild/変換成功 |
-| CLIとWASMの共有処理 | src/cli.rs・src/wasm.rsともtranspileを呼ぶ。実Chromiumとnativeの63件完全一致比較 |
-| 走査、リテラル、UTF-8、不正入力 | scan 4件、syntax 27件。未閉鎖/余分な括弧、ファイル名、行位置を検証 |
+| CLIとWASMの共有処理 | src/cli.rs・src/wasm.rsともtranspileを呼ぶ。実Chromiumとnativeの65件完全一致比較 |
+| 走査、リテラル、UTF-8、不正入力 | scan 4件、syntax 29件。未閉鎖/余分な括弧、ファイル名、行位置を検証 |
 | 関数・テンプレート・型・スコープ・lambda・include | syntax、fixtures、循環include・取り込み先の名前衝突回避テスト |
-| 入出力、宣言、タプル、独自演算子、マクロ | transforms 16件と63ケース。旧版の優先順位、裸のカンマ出力、入力++も照合 |
+| 入出力、宣言、タプル、独自演算子、マクロ | transforms 16件と65ケース。旧版の優先順位、裸のカンマ出力、入力++も照合 |
 | ライブラリ全件 | 67件の本文・名前・位置・依存・登録順序完全一致。選択/設定/状態分離のlibrary 4件 |
 | 外部ヘッダー | 公式ac-libraryを用意し、両版のatcoder::dsu利用をコンパイル・実行。ヘッダーは同梱しない |
 | CLIのrun/export/exec、失敗伝播 | cli 6件。空白/引用符を含むパス、終了7、コンパイル失敗、コンパイラ不在、ファイル入出力、相対include、stdinソース名 |
-| ブラウザ画面と連続変換 | 全63件、既存3サンプルタブの選択、エラー後の復帰、FastIO状態分離、pageerrorなし |
+| ブラウザ画面と連続変換 | 全65件、既存3サンプルタブの選択、エラー後の復帰、FastIO状態分離、pageerrorなし |
 | ビルドと利用手順 | Make native/test/reference/wasm、README、test_build。サンプル6件と成果物のハッシュ/モード不変 |
-| 意図した非互換・既知の旧不具合 | docs/compatibility.md。正常54件と既知挙動1件、旧生成器失敗6件、元ライブラリ失敗2件を区別 |
+| 意図した非互換・既知の旧不具合 | docs/compatibility.md。正常56件と既知挙動1件、旧生成器失敗6件、元ライブラリ失敗2件を区別 |
 | 独立レビュー | 別コンテキストのレビューで4件のImportantを検出。各修正をRED→GREENで検証し全体テストへ追加。Minorの保留なし |
 
 最終結果: 全検証成功。
 
 - `cargo fmt --check` / `cargo clippy --all-targets --all-features -- -D warnings`: 成功。
-- `make test`: Rustテスト58件（63ケースの互換性検証を内包）とハーネス検証4件、すべて成功。
-- `make test-reference`: カタログ67/67、既存60/60を前回検証し、今回の追加3/3も旧版との一致を確認。
-- `make test-web`: 実Chromiumで63/63、サンプルタブ、エラー復帰、状態分離、pageerrorなし。
+- `make test`: Rustテスト60件（65ケースの互換性検証を内包）とハーネス検証4件、すべて成功。
+- `make test-reference`: カタログ67/67、既存60/60とenum等の追加3/3を検証済み。今回さらにif constexpr/switchの2/2を旧版と比較。
+- `make test-web`: 実Chromiumで65/65、サンプルタブ、エラー復帰、状態分離、pageerrorなし。
 - `python3 tools/test_build.py`: 成功。既存6サンプルと成果物の不変性を確認。
 - 最新コードのクリーンRust buildと標準入力変換: C++コンパイラ呼び出しゼロで成功。
 
@@ -51,3 +51,7 @@
 enum解析の修正は`review_enum_members_are_not_statements`で修正前の失敗から成功への変化を確認した。追加した通常/匿名enum、enum class、明示的な構築式の3ケースは旧C++版との比較で3/3成功。ヘッダーを明示的mainの外へ配置する回避方法も実ヘッダーで確認した。
 
 新たなレビューのうち既存のヘッダー制限は[Issue #4](https://github.com/hanjyou0811/Albat/issues/4)、C++の宣言として扱われる`Box(x);`は変換器外でも再現するため不具合対象外とした。
+
+## if constexpr / switchレビュー対応後
+
+2件とも修正前の回帰テストが解析エラーで失敗することを確認し、修正後は成功。追加の旧版比較2/2も成功。Rust側では不要なテンプレート分岐、else-if連鎖、コメント、case/defaultのブロック、連続ラベル、ブロック内Albat構文を検証する。旧版自体が壊れる組み合わせは互換性記録で区別した。

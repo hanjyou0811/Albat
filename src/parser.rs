@@ -183,7 +183,21 @@ impl Parser<'_> {
             "if", "for", "while", "switch", "rep", "REP", "rrep", "RREP", "fore", "do_perm",
         ];
         if controls.contains(&word) {
-            let open = start + word_end + s[word_end..].len() - s[word_end..].trim_start().len();
+            self.cursor = start + word_end;
+            self.skip()?;
+            if word == "if"
+                && self.source[self.cursor..]
+                    .strip_prefix("constexpr")
+                    .is_some_and(|tail| {
+                        tail.as_bytes()
+                            .first()
+                            .is_none_or(|&b| !is_identifier_byte(b))
+                    })
+            {
+                self.cursor += "constexpr".len();
+                self.skip()?;
+            }
+            let open = self.cursor;
             if self.source.as_bytes().get(open) != Some(&b'(') {
                 return Err(self.error(open, "expected control condition"));
             }
@@ -264,6 +278,17 @@ impl Parser<'_> {
                     if leading_keyword(head) == "enum" {
                         i = matching_close(self.source, i)? + 1;
                         continue;
+                    }
+                    let last_code = (start..i)
+                        .rev()
+                        .find(|&p| mask[p] && !bytes[p].is_ascii_whitespace());
+                    if matches!(word, "case" | "default")
+                        && last_code.is_some_and(|p| bytes[p] == b':')
+                    {
+                        node.text = head.into();
+                        self.cursor = i + 1;
+                        node.children = Some(self.nodes(true)?);
+                        return Ok(node);
                     }
                     let structural =
                         matches!(leading_keyword(head), "struct" | "class" | "namespace");

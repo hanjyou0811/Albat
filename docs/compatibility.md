@@ -122,8 +122,8 @@
 
 ## 再現コマンドと補足
 
-- `make test`: Rustの単体・結合テストと63ケースのコンパイル/実行/既知コンパイルエラー検証。
-- `make test-reference`: 全カタログ照合と同じ63ケースを旧変換器にも適用。現在の分類は {'normal': 54, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
+- `make test`: Rustの単体・結合テストと65ケースのコンパイル/実行/既知コンパイルエラー検証。
+- `make test-reference`: 全カタログ照合と同じ65ケースを旧変換器にも適用。現在の分類は {'normal': 56, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
 - `make test-web`: 実ブラウザで全ケースの生成C++をネイティブ版と完全一致比較し、不正入力後の復帰と状態の分離を検証する。C++をブラウザ内で実行するテストではない。
 - `python3 tools/test_build.py`: Makeビルド、CLIヘルプ、6サンプル、sampleディレクトリの内容・パーミッション不変を検証。
 - ACLは公式ac-libraryを用意し、`CPLUS_INCLUDE_PATH` を指定して `#include <atcoder/all>` とdsuの利用を両版で検証した。外部ヘッダーは同梱しない。
@@ -155,3 +155,10 @@
 - `enum E { A=3, B=4 };`のメンバー列を文の列として解析していた移植ミスを修正。通常・匿名・スコープ付き列挙型を旧版と比較し、メンバー式と末尾カンマも保持する。
 - ヘッダー付き暗黙mainでincludeが関数内に入る問題は旧C++版でも再現。[Issue #4](https://github.com/hanjyou0811/Albat/issues/4)へ分離した。現在は`#include`の後の本文を明示的な`{ ... }`で囲む。今回の移植互換性修正では文法・動作を変更しない。
 - `Box(x);`や`vector<int>(v);`は、C++20自体が宣言として解釈するため、既存変数と衝突する。変換器を介さないg++でも同じエラーを確認した。式として明示した`(Box(x));`と`(vector<int>(v));`は両版で成功し、回帰ケースに追加した。この指摘はAlbatの不具合としてIssue化しない。
+
+## 追加レビュー: if constexprとswitchのブロック
+
+- `if constexpr`の条件前にある`constexpr`を認識し、C++のコンパイル時分岐を保持する。コメントが挟まる場合、`else if constexpr`、型によって無効になる分岐もRust側の結合テストで確認する。
+- `case`/`default`の直後のブロックを初期化式と誤認せず、ラベル付きの文として解析する。ブロック内のAlbat出力、変数宣言、連続するラベル、コメントを検証する。
+- レビューの再現例を`review_if_constexpr`と`review_switch_compound`に追加し、旧C++版との比較2/2が成功。
+- より複雑な`else if constexpr`の連鎖は旧生成器で不正なelseを生成し、`rep`内の複数switch分岐の例では旧版が出力を欠落させた。これらを正常な旧版比較の成功例には数えず、Rust側の結合テストでC++として期待される結果を確認する。言語へ新しい記法を追加する変更ではない。

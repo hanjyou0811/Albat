@@ -249,3 +249,30 @@ fn review_parenthesized_construction_expressions_are_preserved() {
     let source = "struct Box {int x;}; {int x=3; (Box(x)); vector<int> v={1,2}; (vector<int>(v)); cout<<x<<v.size();}";
     assert_eq!(run_cpp(&translate(source), ""), "32");
 }
+
+#[test]
+fn review_if_constexpr_preserves_discarded_branches() {
+    let source = "template<class T> int f(T x){ if /*condition*/ constexpr (is_integral_v<T>) return x; else if constexpr(is_same_v<T,string>) return x.size(); else return 0; } {cout<<f(3)<<f(string(\"abc\"))<<f(1.5);}";
+    assert_eq!(run_cpp(&translate(source), ""), "330");
+    assert!(albat::transpile(
+        "if constexpr_value(true) {}",
+        &albat::Options::default(),
+        &albat::NoSources
+    )
+    .is_err());
+}
+
+#[test]
+fn review_switch_labels_allow_compound_statements() {
+    let source = "{rep(x,3){switch(x){case 0: /* local scope */ {vector<int> v={4}; $$(v[0]); break;} case 1: {cout<<5; break;} default: {cout<<6; break;}}}}";
+    assert_eq!(run_cpp(&translate(source), ""), "4\n56");
+    assert_eq!(
+        run_cpp(
+            &translate(
+                "{int x=2; switch(x){case 1: case 2: {cout<<7; break;} default: {cout<<8;}}}"
+            ),
+            ""
+        ),
+        "7"
+    );
+}

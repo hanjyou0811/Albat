@@ -447,5 +447,19 @@
     "stdin": "",
     "stdout": "32",
     "classification": "normal"
+  },
+  {
+    "id": "review_if_constexpr",
+    "source": "template<class T> int f(T x){ if constexpr(is_integral_v<T>) return x; else return 0; } {cout<<f(3)<<f(1.5);}",
+    "stdin": "",
+    "stdout": "30",
+    "classification": "normal"
+  },
+  {
+    "id": "review_switch_compound",
+    "source": "{int x=1; switch(x){case 1: {x=4; break;} default: {x=5; break;}} cout<<x;}",
+    "stdin": "",
+    "stdout": "4",
+    "classification": "normal"
   }
 ]
