@@ -7,24 +7,24 @@
 | 要件 | 証拠 |
 | --- | --- |
 | 独立したRust変換器 | Cargo構成、src/lib.rs、C++コンパイラを拒否する環境でのクリーンbuild/変換成功 |
-| CLIとWASMの共有処理 | src/cli.rs・src/wasm.rsともtranspileを呼ぶ。実Chromiumとnativeの68件完全一致比較 |
-| 走査、リテラル、UTF-8、不正入力 | scan 5件、syntax 33件。未閉鎖/余分な括弧、ファイル名、行位置を検証 |
+| CLIとWASMの共有処理 | src/cli.rs・src/wasm.rsともtranspileを呼ぶ。実Chromiumとnativeの69件完全一致比較 |
+| 走査、リテラル、UTF-8、不正入力 | scan 5件、syntax 35件。未閉鎖/余分な括弧、ファイル名、行位置を検証 |
 | 関数・テンプレート・型・スコープ・lambda・include | syntax、fixtures、循環include・取り込み先の名前衝突回避テスト |
-| 入出力、宣言、タプル、独自演算子、マクロ | transforms 16件と68ケース。旧版の優先順位、裸のカンマ出力、入力++も照合 |
+| 入出力、宣言、タプル、独自演算子、マクロ | transforms 16件と69ケース。旧版の優先順位、裸のカンマ出力、入力++も照合 |
 | ライブラリ全件 | 67件の本文・名前・位置・依存・登録順序完全一致。選択/設定/状態分離のlibrary 4件 |
 | 外部ヘッダー | 公式ac-libraryを用意し、両版のatcoder::dsu利用をコンパイル・実行。ヘッダーは同梱しない |
 | CLIのrun/export/exec、失敗伝播 | cli 6件。空白/引用符を含むパス、終了7、コンパイル失敗、コンパイラ不在、ファイル入出力、相対include、stdinソース名 |
-| ブラウザ画面と連続変換 | 全68件、既存3サンプルタブの選択、エラー後の復帰、FastIO状態分離、pageerrorなし |
+| ブラウザ画面と連続変換 | 全69件、既存3サンプルタブの選択、エラー後の復帰、FastIO状態分離、pageerrorなし |
 | ビルドと利用手順 | Make native/test/reference/wasm、README、test_build。サンプル6件と成果物のハッシュ/モード不変 |
-| 意図した非互換・既知の旧不具合 | docs/compatibility.md。正常59件と既知挙動1件、旧生成器失敗6件、元ライブラリ失敗2件を区別 |
+| 意図した非互換・既知の旧不具合 | docs/compatibility.md。正常59件と既知挙動1件、旧生成器失敗7件、元ライブラリ失敗2件を区別 |
 | 独立レビュー | 別コンテキストのレビューで4件のImportantを検出。各修正をRED→GREENで検証し全体テストへ追加。Minorの保留なし |
 
 最終結果: 全検証成功。
 
 - `cargo fmt --check` / `cargo clippy --all-targets --all-features -- -D warnings`: 成功。
-- `make test`: Rustテスト65件（68ケースの互換性検証を内包）とハーネス検証4件、すべて成功。
+- `make test`: Rustテスト67件（69ケースの互換性検証を内包）とハーネス検証4件、すべて成功。
 - `make test-reference`: カタログ67/67、既存60/60とenum等の追加3/3を検証済み。if constexpr/switchの2/2と、初期化・条件入力・テンプレート引数の追加3/3も旧版と比較。
-- `make test-web`: 実Chromiumで68/68、サンプルタブ、エラー復帰、状態分離、pageerrorなし。
+- `make test-web`: 実Chromiumで69/69、サンプルタブ、エラー復帰、状態分離、pageerrorなし。
 - `python3 tools/test_build.py`: 成功。既存6サンプルと成果物の不変性を確認。
 - 最新コードのクリーンRust buildと標準入力変換: C++コンパイラ呼び出しゼロで成功。
 
@@ -60,3 +60,8 @@ enum解析の修正は`review_enum_members_are_not_statements`で修正前の失
 ## 初期化・条件入力・テンプレート引数レビュー対応後
 
 レビューの3例は修正前に失敗することを確認。修正後は旧C++版との比較3/3が成功。関数本体の判別ではconst&等の修飾を維持し、マクロ引数ではテンプレートのカンマと通常の比較・シフトを区別する。条件式から取り出した宣言にも通常の変換を適用する。Albatの構文・意味を追加変更する修正ではない。
+
+
+## コンストラクタ・includeレビュー対応後
+
+修正前にコンストラクタの解析失敗とinclude先の未宣言関数エラーを確認。修正後は複数形式のメンバー初期化と、入れ子のincludeの前方宣言を結合テストで検証。旧版比較ではincludeの実行結果が一致し、コンストラクタの例は旧版も失敗するため既知エラーとして区別した。Rustテスト67件、69ケースの生成C++検証、実ブラウザ69ケース、Clippyがすべて成功。

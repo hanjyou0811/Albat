@@ -122,8 +122,8 @@
 
 ## 再現コマンドと補足
 
-- `make test`: Rustの単体・結合テストと68ケースのコンパイル/実行/既知コンパイルエラー検証。
-- `make test-reference`: 全カタログ照合と同じ68ケースを旧変換器にも適用。現在の分類は {'normal': 59, 'known-bug': 1, 'legacy-generator-failure': 6, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
+- `make test`: Rustの単体・結合テストと69ケースのコンパイル/実行/既知コンパイルエラー検証。
+- `make test-reference`: 全カタログ照合と同じ69ケースを旧変換器にも適用。現在の分類は {'normal': 59, 'known-bug': 1, 'legacy-generator-failure': 7, 'known-library-compile-error': 2}。ケース追加時はJSONを正とする。
 - `make test-web`: 実ブラウザで全ケースの生成C++をネイティブ版と完全一致比較し、不正入力後の復帰と状態の分離を検証する。C++をブラウザ内で実行するテストではない。
 - `python3 tools/test_build.py`: Makeビルド、CLIヘルプ、6サンプル、sampleディレクトリの内容・パーミッション不変を検証。
 - ACLは公式ac-libraryを用意し、`CPLUS_INCLUDE_PATH` を指定して `#include <atcoder/all>` とdsuの利用を両版で検証した。外部ヘッダーは同梱しない。
@@ -167,3 +167,10 @@
 ## 初期化・条件入力・マクロ引数のレビュー対応
 
 関数呼び出し後のbraced initializerを関数本体と誤認する解析、制御ヘッダーから取り出した入力宣言の型エイリアス変換漏れ、マクロ引数内のテンプレートのカンマ分割を修正。3件とも修正前に再現し、旧C++版で成功する入力と実行結果を照合した。通常の比較・シフト演算子、ネストしたテンプレート、コメント、const&付き関数の維持も回帰テストで検証する。
+
+
+## コンストラクタ・include前方宣言のレビュー対応
+
+`A(): x{1} {}` の初期化リストと本体を区別し、複数のメンバーや括弧による初期化も保持する。レビューでは旧版でも成功するとされていたが、凍結した旧C++変換器はこの再現例から不正なC++を生成した。`review_constructor_braced_initializer`は旧生成器失敗として記録し、Rust版の正常実行と旧版の既知コンパイルエラーを別々に検証する。
+
+Albat includeで取り込んだ関数の前方宣言を、入れ子のincludeにも再帰して収集する。実際のクラス・名前空間・関数本体には降りず、宣言のスコープを維持する。`int f(){return g();} int g(){return 3;}`を取り込む例は、旧版とRust版で出力`3`の一致を確認。ブラウザのファイルローダーは未提供のため、includeはSourceLoaderの結合テストとネイティブ比較で検証する。

@@ -392,6 +392,21 @@ fn is_function_header(head: &str) -> Result<bool, Diagnostic> {
         .char_indices()
         .filter_map(|(i, c)| mask[i].then_some(c))
         .collect();
+    if let Some(open) = code.find('(') {
+        let close = matching_close(&code, open)?;
+        let mut tail = code[close + 1..].trim();
+        if let Some(rest) = tail.strip_prefix("noexcept") {
+            tail = rest.trim_start();
+            if tail.starts_with('(') {
+                tail = tail[matching_close(tail, 0)? + 1..].trim_start();
+            }
+        }
+        if let Some(initializers) = tail.strip_prefix(':') {
+            // At a member's opening brace the list is incomplete; only the
+            // brace after every complete initializer starts the function body.
+            return complete_member_initializers(initializers);
+        }
+    }
     let Some(close) = code.rfind(')') else {
         return Ok(false);
     };
@@ -407,4 +422,21 @@ fn is_function_header(head: &str) -> Result<bool, Diagnostic> {
                 "" | "const" | "volatile" | "noexcept" | "override" | "final"
             )
         }))
+}
+
+fn complete_member_initializers(source: &str) -> Result<bool, Diagnostic> {
+    for initializer in crate::scan::split_arguments(source)? {
+        let initializer = initializer.trim();
+        let Some(open) = initializer.find(['(', '{']) else {
+            return Ok(false);
+        };
+        if initializer[..open].trim().is_empty() {
+            return Ok(false);
+        }
+        let close = matching_close(initializer, open)?;
+        if !matches!(initializer[close + 1..].trim(), "" | "...") {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }

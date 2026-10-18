@@ -482,5 +482,13 @@
     "stdin": "",
     "stdout": "1",
     "classification": "normal"
+  },
+  {
+    "id": "review_constructor_braced_initializer",
+    "source": "struct A {int x; A(): x{1} {}}; {A a; cout<<a.x;}",
+    "stdin": "",
+    "stdout": "1",
+    "classification": "legacy-generator-failure",
+    "reference_compile_error": "expected unqualified-id"
   }
 ]

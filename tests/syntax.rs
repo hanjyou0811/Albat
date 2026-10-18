@@ -304,3 +304,39 @@ fn function_detection_preserves_qualified_declarators() {
     let source = "struct Box {int f() const& noexcept {return 3;}}; auto value() -> int {return 4;} {Box b; cout<<b.f()<<value();}";
     assert_eq!(run_cpp(&translate(source), ""), "34");
 }
+
+#[test]
+fn review_constructor_braced_member_initializers() {
+    let source = "struct A {int x; A(): x{1} {}}; {A a; cout<<a.x;}";
+    assert_eq!(run_cpp(&translate(source), ""), "1");
+    let source = "struct A {int x,y; vector<int> v; A() noexcept: x{1}, y(2), v{3,4} {x+=y;} }; {A a; cout<<a.x<<a.v[1];}";
+    assert_eq!(run_cpp(&translate(source), ""), "34");
+}
+
+#[test]
+fn review_included_functions_have_forward_declarations() {
+    struct Files;
+    impl albat::SourceLoader for Files {
+        fn load(&self, path: &str, _: &str) -> Result<String, albat::Diagnostic> {
+            match path {
+                "outer.al" => Ok("#include inner.al\n".into()),
+                "inner.al" => Ok(
+                    "int f(){return g();} int g(){return 3;} struct A {int member(){return 4;}};"
+                        .into(),
+                ),
+                _ => panic!("unexpected source: {path}"),
+            }
+        }
+    }
+    let cpp = albat::transpile(
+        "#include outer.al\n{A a; cout<<f()<<a.member();}",
+        &albat::Options::default(),
+        &Files,
+    )
+    .unwrap();
+    assert_eq!(run_cpp(&cpp, ""), "34");
+    assert!(
+        !cpp.contains("int member();"),
+        "members must not become global prototypes"
+    );
+}

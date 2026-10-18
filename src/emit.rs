@@ -87,14 +87,25 @@ pub fn emit(program: &Program, libs: &LibraryManager) -> Result<String, Diagnost
         out.push_str(libs.body(if flush { "FastIO_flush" } else { "FastIO" }));
         out.push('\n');
     }
-    for n in &program.nodes {
-        if n.function && !contains_main(&n.text) && n.children.is_some() {
-            out.push_str(&prototype(&n.text)?);
+    collect_prototypes(&program.nodes, &mut out)?;
+    out.push_str(&nodes(&program.nodes, libs)?);
+    Ok(out)
+}
+
+// Includes are transparent, but classes, namespaces and function bodies are
+// real scopes: only descend through include wrappers at this scope.
+fn collect_prototypes(nodes: &[Node], out: &mut String) -> Result<(), Diagnostic> {
+    for node in nodes {
+        if node.suffix == "@include" {
+            if let Some(children) = &node.children {
+                collect_prototypes(children, out)?;
+            }
+        } else if node.function && !contains_main(&node.text) && node.children.is_some() {
+            out.push_str(&prototype(&node.text)?);
             out.push_str(";\n");
         }
     }
-    out.push_str(&nodes(&program.nodes, libs)?);
-    Ok(out)
+    Ok(())
 }
 
 fn prototype(header: &str) -> Result<String, Diagnostic> {
